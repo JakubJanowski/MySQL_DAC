@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MySQL_DAC"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="433.13" Width="707.933">
 
     <Window.Resources>
         <SolidColorBrush x:Key="brushWatermarkBackground" Color="White" />
@@ -39,7 +39,22 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Database">
-                <Grid Background="#FFE5E5E5"/>
+                <ScrollViewer Margin="11,10,12.6,10.4">
+                    <Grid Background="#FFE5E5E5" Width="520" Height="570">
+                        <DataGrid HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
+                        <DataGrid HorizontalAlignment="Left" Margin="10,112,0,0" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
+                        <DataGrid HorizontalAlignment="Left" Margin="10,203,0,0" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
+                        <DataGrid HorizontalAlignment="Left" Margin="10,294,0,-44.2" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
+                        <DataGrid HorizontalAlignment="Left" Margin="10,385,0,0" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
+                        <DataGrid HorizontalAlignment="Left" Margin="10,476,0,0" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
+                        <TextBlock HorizontalAlignment="Left" Margin="10,2,0,0" TextWrapping="Wrap" Text="Pracownik" VerticalAlignment="Top"/>
+                        <TextBlock HorizontalAlignment="Left" Margin="10,91,0,0" TextWrapping="Wrap" Text="Zatrudnienie" VerticalAlignment="Top"/>
+                        <TextBlock HorizontalAlignment="Left" Margin="10,182,0,0" TextWrapping="Wrap" Text="Jest na zmianie" VerticalAlignment="Top"/>
+                        <TextBlock HorizontalAlignment="Left" Margin="10,273,0,0" TextWrapping="Wrap" Text="Parametry reaktora" VerticalAlignment="Top"/>
+                        <TextBlock HorizontalAlignment="Left" Margin="10,364,0,0" TextWrapping="Wrap" Text="Reaktor" VerticalAlignment="Top"/>
+                        <TextBlock HorizontalAlignment="Left" Margin="10,455,0,0" TextWrapping="Wrap" Text="Awaria" VerticalAlignment="Top"/>
+                    </Grid>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="Management Panel">
                 <Grid Background="#FFE5E5E5">
@@ -57,6 +72,5 @@
                 </Grid>
             </TabItem>
         </TabControl>
-
     </Grid>
 </Window>

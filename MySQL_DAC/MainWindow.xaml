@@ -6,55 +6,25 @@
         xmlns:local="clr-namespace:MySQL_DAC"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-
-    <Window.Resources>
-        <SolidColorBrush x:Key="brushWatermarkBackground" Color="White" />
-        <SolidColorBrush x:Key="brushWatermarkForeground" Color="LightSteelBlue" />
-        <SolidColorBrush x:Key="brushWatermarkBorder" Color="Indigo" />
-
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <local:TextInputToVisibilityConverter x:Key="TextInputToVisibilityConverter" />
-
-        <Style x:Key="EntryFieldStyle" TargetType="Grid" >
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Margin" Value="20,0" />
-        </Style>
-    </Window.Resources>
-
     <Grid>
         <TabControl x:Name="tabControl" Height="319" VerticalAlignment="Top" HorizontalAlignment="Left" TabStripPlacement="Left" Width="517">
             <TabItem Header="Log in">
                 <Grid Background="#FFE5E5E5">
-                    <Grid Background="{StaticResource brushWatermarkBackground}" HorizontalAlignment="Center" Height="23" Margin="0,40,0,0" VerticalAlignment="Top" Width="180">
-                        <TextBlock Margin="5, 2" Text="Username" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=passwordTextBox, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        <TextBox x:Name="passwordTextBox" Background="Transparent" BorderBrush="{StaticResource brushWatermarkBorder}" />
+                    <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="122,166,0,0" VerticalAlignment="Top" Width="75"/>
+                    <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="100,98,0,0" TextWrapping="Wrap" Text="username" VerticalAlignment="Top" Width="120"/>
+                    <TextBox x:Name="textBox1" HorizontalAlignment="Left" Height="23" Margin="100,126,0,0" TextWrapping="Wrap" Text="password" VerticalAlignment="Top" Width="120"/>
+                    <Grid Background="{StaticResource brushWatermarkBackground}">
+                        <TextBlock Margin="5,2" Text="Type something..." Foreground="{StaticResource brushForeground}" Visibility="{Binding ElementName=txtUserEntry, Path=Text.IsEmpty,
+                          Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <TextBox Name="txtUserEntry" Background="Transparent" BorderBrush="{StaticResource brushBorder}" />
                     </Grid>
-                    <Grid Background="{StaticResource brushWatermarkBackground}" HorizontalAlignment="Center" Height="23" Margin="0,70,0,0" VerticalAlignment="Top" Width="180">
-                        <TextBlock Margin="5, 2" Text="Password" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=usernameTextBox, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        <TextBox x:Name="usernameTextBox" Background="Transparent" BorderBrush="{StaticResource brushWatermarkBorder}" />
-                    </Grid>
-                    <Button x:Name="loginButton" Content="Log in" HorizontalAlignment="Center" Margin="-100,105,0,0" VerticalAlignment="Top" Width="74"/>
-                    <Button x:Name="cancelButton" Content="Cancel" HorizontalAlignment="Center" Margin="100,105,0,0" VerticalAlignment="Top" Width="74"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Database">
                 <Grid Background="#FFE5E5E5"/>
             </TabItem>
             <TabItem Header="Management Panel">
-                <Grid Background="#FFE5E5E5">
-                    <TreeView x:Name="treeView" HorizontalAlignment="Left" Height="158" VerticalAlignment="Top" Width="375" Margin="10,10,0,0">
-                        <TreeViewItem Header="Admin" IsExpanded="True">
-                            <TreeViewItem Header="VladimirPutin [Staff Leader]" HorizontalAlignment="Left" Width="352">
-                                <TreeViewItem Header="JanKowalski [Engineer]" HorizontalAlignment="Left" Width="352" IsExpanded="True">
-                                    <TreeViewItem Header="NikolaTesla [Technician]" HorizontalAlignment="Left" Width="333"/>
-                                    <TreeViewItem Header="AlbertEinstein [Technician]" HorizontalAlignment="Left" Width="333"/>
-                                </TreeViewItem>
-                                <TreeViewItem Header="MariaSkłodowska [Engineer]" HorizontalAlignment="Left" Width="352"/>
-                            </TreeViewItem>
-                        </TreeViewItem>
-                    </TreeView>
-                </Grid>
+                <Grid Background="#FFE5E5E5"/>
             </TabItem>
         </TabControl>
 

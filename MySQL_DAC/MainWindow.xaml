@@ -5,27 +5,40 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MySQL_DAC"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        <TabControl x:Name="tabControl" Height="319" VerticalAlignment="Top" HorizontalAlignment="Left" TabStripPlacement="Left" Width="517">
+        Title="MainWindow" Height="433.13" Width="707.933">
+    <Grid Margin="0,0,18.6,368.6">
+        <TabControl x:Name="tabControl" HorizontalAlignment="Left" TabStripPlacement="Left" Width="673" Height="392" VerticalAlignment="Top" Margin="0,0,0,-357.4">
             <TabItem Header="Log in">
                 <Grid Background="#FFE5E5E5">
                     <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="122,166,0,0" VerticalAlignment="Top" Width="75"/>
                     <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="100,98,0,0" TextWrapping="Wrap" Text="username" VerticalAlignment="Top" Width="120"/>
                     <TextBox x:Name="textBox1" HorizontalAlignment="Left" Height="23" Margin="100,126,0,0" TextWrapping="Wrap" Text="password" VerticalAlignment="Top" Width="120"/>
-                    <Grid Background="{StaticResource brushWatermarkBackground}">
-                        <TextBlock Margin="5,2" Text="Type something..." Foreground="{StaticResource brushForeground}" Visibility="{Binding ElementName=txtUserEntry, Path=Text.IsEmpty,
-                          Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        <TextBox Name="txtUserEntry" Background="Transparent" BorderBrush="{StaticResource brushBorder}" />
-                    </Grid>
+
                 </Grid>
             </TabItem>
             <TabItem Header="Database">
-                <Grid Background="#FFE5E5E5"/>
+                <ScrollViewer Margin="11,10,12.6,10.4">
+                    <Grid Background="#FFE5E5E5" Width="520" Height="570">
+                        <DataGrid HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
+                        <DataGrid HorizontalAlignment="Left" Margin="10,112,0,0" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
+                        <DataGrid HorizontalAlignment="Left" Margin="10,203,0,0" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
+                        <DataGrid HorizontalAlignment="Left" Margin="10,294,0,-44.2" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
+                        <DataGrid HorizontalAlignment="Left" Margin="10,385,0,0" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
+                        <DataGrid HorizontalAlignment="Left" Margin="10,476,0,0" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
+                        <TextBlock HorizontalAlignment="Left" Margin="10,2,0,0" TextWrapping="Wrap" Text="Pracownik" VerticalAlignment="Top"/>
+                        <TextBlock HorizontalAlignment="Left" Margin="10,91,0,0" TextWrapping="Wrap" Text="Zatrudnienie" VerticalAlignment="Top"/>
+                        <TextBlock HorizontalAlignment="Left" Margin="10,182,0,0" TextWrapping="Wrap" Text="Jest na zmianie" VerticalAlignment="Top"/>
+                        <TextBlock HorizontalAlignment="Left" Margin="10,273,0,0" TextWrapping="Wrap" Text="Parametry reaktora" VerticalAlignment="Top"/>
+                        <TextBlock HorizontalAlignment="Left" Margin="10,364,0,0" TextWrapping="Wrap" Text="Reaktor" VerticalAlignment="Top"/>
+                        <TextBlock HorizontalAlignment="Left" Margin="10,455,0,0" TextWrapping="Wrap" Text="Awaria" VerticalAlignment="Top"/>
+                    </Grid>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="Management Panel">
                 <Grid Background="#FFE5E5E5"/>
             </TabItem>
+
+
         </TabControl>
 
     </Grid>

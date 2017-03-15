@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MySQL_DAC"
         mc:Ignorable="d"
-        Title="MainWindow" Height="433.13" Width="707.933">
+        Title="MainWindow" Height="405" Width="720">
 
     <Window.Resources>
         <SolidColorBrush x:Key="brushWatermarkBackground" Color="White" />
@@ -23,7 +23,7 @@
     </Window.Resources>
 
     <Grid>
-        <TabControl x:Name="tabControl" Height="319" VerticalAlignment="Top" HorizontalAlignment="Left" TabStripPlacement="Left" Width="517">
+        <TabControl x:Name="tabControl" TabStripPlacement="Left">
             <TabItem Header="Log in">
                 <Grid Background="#FFE5E5E5">
                     <Grid Background="{StaticResource brushWatermarkBackground}" HorizontalAlignment="Center" Height="23" Margin="0,40,0,0" VerticalAlignment="Top" Width="180">
@@ -39,14 +39,14 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Database">
-                <ScrollViewer Margin="11,10,12.6,10.4">
-                    <Grid Background="#FFE5E5E5" Width="520" Height="570">
-                        <DataGrid HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
-                        <DataGrid HorizontalAlignment="Left" Margin="10,112,0,0" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
-                        <DataGrid HorizontalAlignment="Left" Margin="10,203,0,0" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
-                        <DataGrid HorizontalAlignment="Left" Margin="10,294,0,-44.2" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
-                        <DataGrid HorizontalAlignment="Left" Margin="10,385,0,0" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
-                        <DataGrid HorizontalAlignment="Left" Margin="10,476,0,0" VerticalAlignment="Top" Height="63" Width="374" SelectionChanged="DataGrid_SelectionChanged"/>
+                <ScrollViewer>
+                    <Grid Background="#FFE5E5E5">
+                        <DataGrid HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Height="63" Width="374"/>
+                        <DataGrid HorizontalAlignment="Left" Margin="10,112,0,0" VerticalAlignment="Top" Height="63" Width="374"/>
+                        <DataGrid HorizontalAlignment="Left" Margin="10,203,0,0" VerticalAlignment="Top" Height="63" Width="374"/>
+                        <DataGrid HorizontalAlignment="Left" Margin="10,294,0,-44.2" VerticalAlignment="Top" Height="63" Width="374"/>
+                        <DataGrid HorizontalAlignment="Left" Margin="10,385,0,0" VerticalAlignment="Top" Height="63" Width="374"/>
+                        <DataGrid HorizontalAlignment="Left" Margin="10,476,0,0" VerticalAlignment="Top" Height="63" Width="374"/>
                         <TextBlock HorizontalAlignment="Left" Margin="10,2,0,0" TextWrapping="Wrap" Text="Pracownik" VerticalAlignment="Top"/>
                         <TextBlock HorizontalAlignment="Left" Margin="10,91,0,0" TextWrapping="Wrap" Text="Zatrudnienie" VerticalAlignment="Top"/>
                         <TextBlock HorizontalAlignment="Left" Margin="10,182,0,0" TextWrapping="Wrap" Text="Jest na zmianie" VerticalAlignment="Top"/>
@@ -58,17 +58,34 @@
             </TabItem>
             <TabItem Header="Management Panel">
                 <Grid Background="#FFE5E5E5">
-                    <TreeView x:Name="treeView" HorizontalAlignment="Left" Height="293" VerticalAlignment="Top" Width="197" Margin="10,10,0,0">
+                    <TreeView x:Name="treeView" HorizontalAlignment="Left" Height="348" VerticalAlignment="Top" Width="251" Margin="10,10,0,0">
                         <TreeViewItem Header="Admin" IsExpanded="True">
                             <TreeViewItem Header="VladimirPutin [Staff Leader]" HorizontalAlignment="Left" Width="352" IsExpanded="True">
                                 <TreeViewItem Header="JanKowalski [Engineer]" HorizontalAlignment="Left" Width="352" IsExpanded="True">
                                     <TreeViewItem Header="NikolaTesla [Technician]" HorizontalAlignment="Left" Width="333"/>
                                     <TreeViewItem Header="AlbertEinstein [Technician]" HorizontalAlignment="Left" Width="333"/>
                                 </TreeViewItem>
-                                <TreeViewItem Header="MariaSkłodowska [Engineer]" HorizontalAlignment="Left" Width="352"/>
+                                <TreeViewItem Header="MariaSkłodowskaCurie [Engineer]" HorizontalAlignment="Left" Width="352"/>
                             </TreeViewItem>
                         </TreeViewItem>
                     </TreeView>
+                    <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="86" Margin="279,10,0,0" VerticalAlignment="Top" Width="301">
+                        <Grid>
+                        <TextBlock x:Name="permissionsTextBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Permissions" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top" Width="120" >
+                                <ComboBoxItem Content="Awaria" HorizontalAlignment="Left" Width="118"/>
+                                <ComboBoxItem Content="Jest na zmianie" HorizontalAlignment="Left" Width="118"/>
+                                <ComboBoxItem Content="Parametry reaktora" HorizontalAlignment="Left" Width="118"/>
+                                <ComboBoxItem Content="Pracownik" HorizontalAlignment="Left" Width="118"/>
+                                <ComboBoxItem Content="Reaktor" HorizontalAlignment="Left" Width="118"/>
+                                <ComboBoxItem Content="Zatrudnienie" HorizontalAlignment="Left" Width="118"/>
+                            </ComboBox>
+                            <CheckBox x:Name="addCheckBox" Content="Add" HorizontalAlignment="Left" Margin="10,58,0,0" VerticalAlignment="Top"/>
+                            <CheckBox x:Name="deleteCheckBox" Content="Delete" HorizontalAlignment="Left" Margin="152,58,0,0" VerticalAlignment="Top"/>
+                            <CheckBox x:Name="editCheckBox" Content="Edit" HorizontalAlignment="Left" Margin="107,58,0,0" VerticalAlignment="Top"/>
+                            <CheckBox x:Name="viewCheckBox" Content="View" HorizontalAlignment="Left" Margin="57,58,0,0" VerticalAlignment="Top"/>
+                        </Grid>
+                    </Border>
                 </Grid>
             </TabItem>
         </TabControl>

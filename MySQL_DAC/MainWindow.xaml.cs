@@ -28,5 +28,10 @@ namespace MySQL_DAC {
             Debug.WriteLine(passwordBox.SecurePassword);
 			Process.Start("Notepad.exe", usernameTextBox.Text, passwordBox.SecurePassword, "");
 		}
+
+        private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

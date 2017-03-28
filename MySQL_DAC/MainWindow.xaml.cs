@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,5 +22,11 @@ namespace MySQL_DAC {
         public MainWindow() {
             InitializeComponent();
         }
+
+        private void loginButton_Click(object sender, RoutedEventArgs e) {
+            Debug.WriteLine(usernameTextBox.Text);
+            Debug.WriteLine(passwordBox.SecurePassword);
+			Process.Start("Notepad.exe", usernameTextBox.Text, passwordBox.SecurePassword, "");
+		}
     }
 }

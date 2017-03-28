@@ -7,103 +7,102 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="405" Width="720">
 
-    <Window.Resources>
-        <SolidColorBrush x:Key="brushWatermarkBackground" Color="White" />
-        <SolidColorBrush x:Key="brushWatermarkForeground" Color="LightSteelBlue" />
-        <SolidColorBrush x:Key="brushWatermarkBorder" Color="Indigo" />
+	<Window.Resources>
+		<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+		<local:TextInputToVisibilityConverter x:Key="TextInputToVisibilityConverter" />
 
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <local:TextInputToVisibilityConverter x:Key="TextInputToVisibilityConverter" />
+		<Style x:Key="{x:Type PasswordBox}" TargetType="{x:Type PasswordBox}">
+			<Setter Property="local:PasswordBoxMonitor.IsMonitoring" Value="True"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type PasswordBox}">
+						<Border Name="Bd" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
+							<Grid>
+								<ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+								<TextBlock Text="Password" Margin="5, 2" Foreground="LightSteelBlue" Visibility="Collapsed" Name="txtPrompt" />
+							</Grid>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsEnabled" Value="false">
+								<Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+							</Trigger>
+							<Trigger Property="local:PasswordBoxMonitor.PasswordLength" Value="0">
+								<Setter Property="Visibility" TargetName="txtPrompt" Value="Visible"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</Window.Resources>
 
-        <Style x:Key="EntryFieldStyle" TargetType="Grid" >
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Margin" Value="20,0" />
-        </Style>
-        <Style x:Key="TestTextStyle" TargetType="{x:Type TextBlock}">
-            <Setter Property="Visibility" Value="Collapsed" />
-            <Setter Property="Margin" Value="2" />
-            <Setter Property="IsHitTestVisible" Value="False" />
-            <Setter Property="Foreground" Value="Silver" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding ElementName=SearchTermTextBox, UpdateSourceTrigger=LostFocus, Path=Password.Length}" Value="0">
-                    <Setter Property="Visibility" Value="Visible" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Resources>
-
-    <Grid>
-        <TabControl x:Name="tabControl" TabStripPlacement="Left">
-            <TabItem Header="Log in">
-                <Grid Background="#FFE5E5E5">
-                    <Grid Background="{StaticResource brushWatermarkBackground}" HorizontalAlignment="Center" Height="23" Margin="0,40,0,0" VerticalAlignment="Top" Width="180">
-                        <TextBlock Margin="5, 2" Text="Username" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=usernameTextBox, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        <TextBox x:Name="usernameTextBox" Background="Transparent" BorderBrush="{StaticResource brushWatermarkBorder}" />
-                    </Grid>
-                    <Grid Background="{StaticResource brushWatermarkBackground}" HorizontalAlignment="Center" Height="23" Margin="0,70,0,0" VerticalAlignment="Top" Width="180">
-                        <TextBlock Margin="5, 2" Text="Password" Foreground="{StaticResource brushWatermarkForeground}" Visibility="{Binding ElementName=passwordBox, Path=SecurePassword.Length, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        <PasswordBox x:Name="passwordBox" Background="Transparent" BorderBrush="{StaticResource brushWatermarkBorder}"/>
-                    </Grid>
-                    <Grid HorizontalAlignment="Center" Height="23" Margin="0,170,0,0" VerticalAlignment="Top" Width="180">
-                        <PasswordBox x:Name="SearchTermTextBox" />
-                        <TextBlock Style="{StaticResource TestTextStyle}" Text="Test Watermark" />
-                    </Grid>
-                    <Button x:Name="loginButton" Content="Log in" HorizontalAlignment="Center" Margin="-100,105,0,0" VerticalAlignment="Top" Width="74" Click="loginButton_Click"/>
-                    <Button x:Name="cancelButton" Content="Cancel" HorizontalAlignment="Center" Margin="100,105,0,0" VerticalAlignment="Top" Width="74"/>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Database">
-                <ScrollViewer>
-                    <Grid Background="#FFE5E5E5">
-                        <DataGrid HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Height="63" Width="374"/>
-                        <DataGrid HorizontalAlignment="Left" Margin="10,112,0,0" VerticalAlignment="Top" Height="63" Width="374"/>
-                        <DataGrid HorizontalAlignment="Left" Margin="10,203,0,0" VerticalAlignment="Top" Height="63" Width="374"/>
-                        <DataGrid HorizontalAlignment="Left" Margin="10,294,0,-44.2" VerticalAlignment="Top" Height="63" Width="374"/>
-                        <DataGrid HorizontalAlignment="Left" Margin="10,385,0,0" VerticalAlignment="Top" Height="63" Width="374"/>
-                        <DataGrid HorizontalAlignment="Left" Margin="10,476,0,0" VerticalAlignment="Top" Height="63" Width="374"/>
-                        <TextBlock HorizontalAlignment="Left" Margin="10,2,0,0" TextWrapping="Wrap" Text="Pracownik" VerticalAlignment="Top"/>
-                        <TextBlock HorizontalAlignment="Left" Margin="10,91,0,0" TextWrapping="Wrap" Text="Zatrudnienie" VerticalAlignment="Top"/>
-                        <TextBlock HorizontalAlignment="Left" Margin="10,182,0,0" TextWrapping="Wrap" Text="Jest na zmianie" VerticalAlignment="Top"/>
-                        <TextBlock HorizontalAlignment="Left" Margin="10,273,0,0" TextWrapping="Wrap" Text="Parametry reaktora" VerticalAlignment="Top"/>
-                        <TextBlock HorizontalAlignment="Left" Margin="10,364,0,0" TextWrapping="Wrap" Text="Reaktor" VerticalAlignment="Top"/>
-                        <TextBlock HorizontalAlignment="Left" Margin="10,455,0,0" TextWrapping="Wrap" Text="Awaria" VerticalAlignment="Top"/>
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Management Panel">
-                <Grid Background="#FFE5E5E5">
-                    <TreeView x:Name="treeView" HorizontalAlignment="Left" Height="348" VerticalAlignment="Top" Width="251" Margin="10,10,0,0">
-                        <TreeViewItem Header="Admin" IsExpanded="True">
-                            <TreeViewItem Header="user1 [Staff Leader]" HorizontalAlignment="Left" Width="352" IsExpanded="True">
-                                <TreeViewItem Header="JanKowalski [Engineer]" HorizontalAlignment="Left" Width="352" IsExpanded="True">
-                                    <TreeViewItem Header="NikolaTesla [Technician]" HorizontalAlignment="Left" Width="333"/>
-                                    <TreeViewItem Header="AlbertEinstein [Technician]" HorizontalAlignment="Left" Width="333"/>
-                                </TreeViewItem>
-                                <TreeViewItem Header="MariaSkłodowskaCurie [Engineer]" HorizontalAlignment="Left" Width="352"/>
-                            </TreeViewItem>
-                        </TreeViewItem>
-                    </TreeView>
-                    <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="86" Margin="279,10,0,0" VerticalAlignment="Top" Width="301">
-                        <Grid>
-                            <TextBlock x:Name="permissionsTextBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Permissions" VerticalAlignment="Top"/>
-                            <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top" Width="120" >
-                                <ComboBoxItem Content="Awaria" HorizontalAlignment="Left" Width="118"/>
-                                <ComboBoxItem Content="Jest na zmianie" HorizontalAlignment="Left" Width="118"/>
-                                <ComboBoxItem Content="Parametry reaktora" HorizontalAlignment="Left" Width="118"/>
-                                <ComboBoxItem Content="Pracownik" HorizontalAlignment="Left" Width="118"/>
-                                <ComboBoxItem Content="Reaktor" HorizontalAlignment="Left" Width="118"/>
-                                <ComboBoxItem Content="Zatrudnienie" HorizontalAlignment="Left" Width="118"/>
-                            </ComboBox>
-                            <CheckBox x:Name="addCheckBox" Content="Add" HorizontalAlignment="Left" Margin="10,58,0,0" VerticalAlignment="Top"/>
-                            <CheckBox x:Name="deleteCheckBox" Content="Delete" HorizontalAlignment="Left" Margin="152,58,0,0" VerticalAlignment="Top"/>
-                            <CheckBox x:Name="editCheckBox" Content="Edit" HorizontalAlignment="Left" Margin="107,58,0,0" VerticalAlignment="Top"/>
-                            <CheckBox x:Name="viewCheckBox" Content="View" HorizontalAlignment="Left" Margin="57,58,0,0" VerticalAlignment="Top"/>
-                            <CheckBox x:Name="delegationCheckBox" Content="Delegation" HorizontalAlignment="Left" Margin="211,58,0,0" VerticalAlignment="Top"/>
-                        </Grid>
-                    </Border>
-                </Grid>
-            </TabItem>
-        </TabControl>
-    </Grid>
+	<Grid>
+		<TabControl x:Name="tabControl" TabStripPlacement="Left">
+			<TabItem Header="Log in">
+				<Grid Background="#FFE5E5E5">
+					<Grid Background="White" HorizontalAlignment="Center" Height="23" Margin="0,40,0,0" VerticalAlignment="Top" Width="180">
+						<TextBlock Margin="5, 2" Text="Username" Foreground="LightSteelBlue" Visibility="{Binding ElementName=usernameTextBox, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" />
+						<TextBox x:Name="usernameTextBox" Background="Transparent" BorderBrush="Indigo" />
+					</Grid>
+					<Grid Background="White" HorizontalAlignment="Center" Height="23" Margin="0,70,0,0" VerticalAlignment="Top" Width="180">
+						<PasswordBox x:Name="passwordBox" Background="Transparent" BorderBrush="Indigo"/>
+					</Grid>
+					<Button x:Name="loginButton" Content="Log in" HorizontalAlignment="Center" Margin="-100,105,0,0" VerticalAlignment="Top" Width="74" Click="loginButton_Click"/>
+					<Button x:Name="cancelButton" Content="Cancel" HorizontalAlignment="Center" Margin="100,105,0,0" VerticalAlignment="Top" Width="74"/>
+				</Grid>
+			</TabItem>
+			<TabItem Header="Database">
+				<ScrollViewer>
+					<Grid Background="#FFE5E5E5">
+						<DataGrid HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Height="63" Width="374"/>
+						<DataGrid HorizontalAlignment="Left" Margin="10,112,0,0" VerticalAlignment="Top" Height="63" Width="374"/>
+						<DataGrid HorizontalAlignment="Left" Margin="10,203,0,0" VerticalAlignment="Top" Height="63" Width="374"/>
+						<DataGrid HorizontalAlignment="Left" Margin="10,294,0,-44.2" VerticalAlignment="Top" Height="63" Width="374"/>
+						<DataGrid HorizontalAlignment="Left" Margin="10,385,0,0" VerticalAlignment="Top" Height="63" Width="374"/>
+						<DataGrid HorizontalAlignment="Left" Margin="10,476,0,0" VerticalAlignment="Top" Height="63" Width="374"/>
+						<TextBlock HorizontalAlignment="Left" Margin="10,2,0,0" TextWrapping="Wrap" Text="Pracownik" VerticalAlignment="Top"/>
+						<TextBlock HorizontalAlignment="Left" Margin="10,91,0,0" TextWrapping="Wrap" Text="Zatrudnienie" VerticalAlignment="Top"/>
+						<TextBlock HorizontalAlignment="Left" Margin="10,182,0,0" TextWrapping="Wrap" Text="Jest na zmianie" VerticalAlignment="Top"/>
+						<TextBlock HorizontalAlignment="Left" Margin="10,273,0,0" TextWrapping="Wrap" Text="Parametry reaktora" VerticalAlignment="Top"/>
+						<TextBlock HorizontalAlignment="Left" Margin="10,364,0,0" TextWrapping="Wrap" Text="Reaktor" VerticalAlignment="Top"/>
+						<TextBlock HorizontalAlignment="Left" Margin="10,455,0,0" TextWrapping="Wrap" Text="Awaria" VerticalAlignment="Top"/>
+					</Grid>
+				</ScrollViewer>
+			</TabItem>
+			<TabItem Header="Management Panel">
+				<Grid Background="#FFE5E5E5">
+					<TreeView x:Name="treeView" HorizontalAlignment="Left" Height="348" VerticalAlignment="Top" Width="251" Margin="10,10,0,0">
+						<TreeViewItem Header="Admin" IsExpanded="True">
+							<TreeViewItem Header="user1 [Staff Leader]" HorizontalAlignment="Left" Width="352" IsExpanded="True">
+								<TreeViewItem Header="JanKowalski [Engineer]" HorizontalAlignment="Left" Width="352" IsExpanded="True">
+									<TreeViewItem Header="NikolaTesla [Technician]" HorizontalAlignment="Left" Width="333"/>
+									<TreeViewItem Header="AlbertEinstein [Technician]" HorizontalAlignment="Left" Width="333"/>
+								</TreeViewItem>
+								<TreeViewItem Header="MariaSkłodowskaCurie [Engineer]" HorizontalAlignment="Left" Width="352"/>
+							</TreeViewItem>
+						</TreeViewItem>
+					</TreeView>
+					<Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="86" Margin="279,10,0,0" VerticalAlignment="Top" Width="301">
+						<Grid>
+							<TextBlock x:Name="permissionsTextBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Permissions" VerticalAlignment="Top"/>
+							<ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top" Width="120" >
+								<ComboBoxItem Content="Awaria" HorizontalAlignment="Left" Width="118"/>
+								<ComboBoxItem Content="Jest na zmianie" HorizontalAlignment="Left" Width="118"/>
+								<ComboBoxItem Content="Parametry reaktora" HorizontalAlignment="Left" Width="118"/>
+								<ComboBoxItem Content="Pracownik" HorizontalAlignment="Left" Width="118"/>
+								<ComboBoxItem Content="Reaktor" HorizontalAlignment="Left" Width="118"/>
+								<ComboBoxItem Content="Zatrudnienie" HorizontalAlignment="Left" Width="118"/>
+							</ComboBox>
+							<CheckBox x:Name="addCheckBox" Content="Add" HorizontalAlignment="Left" Margin="10,58,0,0" VerticalAlignment="Top"/>
+							<CheckBox x:Name="deleteCheckBox" Content="Delete" HorizontalAlignment="Left" Margin="152,58,0,0" VerticalAlignment="Top"/>
+							<CheckBox x:Name="editCheckBox" Content="Edit" HorizontalAlignment="Left" Margin="107,58,0,0" VerticalAlignment="Top"/>
+							<CheckBox x:Name="viewCheckBox" Content="View" HorizontalAlignment="Left" Margin="57,58,0,0" VerticalAlignment="Top"/>
+							<CheckBox x:Name="delegationCheckBox" Content="Delegation" HorizontalAlignment="Left" Margin="211,58,0,0" VerticalAlignment="Top"/>
+						</Grid>
+					</Border>
+				</Grid>
+			</TabItem>
+		</TabControl>
+	</Grid>
 </Window>

@@ -12,9 +12,7 @@ namespace MySQL_DAC {
 		}
 
 		private void loginButton_Click(object sender, RoutedEventArgs e) {
-			Debug.WriteLine(usernameTextBox.Text);
-			Debug.WriteLine(passwordBox.SecurePassword);
-			Process.Start("Notepad.exe", usernameTextBox.Text, passwordBox.SecurePassword, "");
+			new DatabaseManager().Connect(username: usernameTextBox.Text, password: passwordBox.Password);
 		}
 	}
 }

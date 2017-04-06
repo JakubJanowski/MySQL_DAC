@@ -35,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -59,11 +60,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="DatabaseTab.xaml">
+    <Page Include="Views\DatabaseTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LogInTab.xaml">
+    <Page Include="Views\LogInTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -75,22 +76,23 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DatabaseTab.xaml.cs">
+    <Compile Include="Database\DatabaseManager.cs" />
+    <Compile Include="Views\DatabaseTab.xaml.cs">
       <DependentUpon>DatabaseTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LogInTab.xaml.cs">
+    <Compile Include="Views\LogInTab.xaml.cs">
       <DependentUpon>LogInTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ManagementTab.xaml.cs">
+    <Compile Include="Views\ManagementTab.xaml.cs">
       <DependentUpon>ManagementTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PasswordBoxMonitor.cs" />
-    <Compile Include="TextInputToVisibilityConverter.cs" />
+    <Compile Include="Views\Controllers\PasswordBoxMonitor.cs" />
+    <Compile Include="Views\Controllers\TextInputToVisibilityConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ManagementTab.xaml">
+    <Page Include="Views\ManagementTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

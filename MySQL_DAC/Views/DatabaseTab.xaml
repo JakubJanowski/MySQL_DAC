@@ -4,19 +4,21 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MySQL_DAC"
+			 xmlns:controllers="clr-namespace:MySQL_DAC.Views.Controllers"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="340" d:DesignWidth="600">
+
+	<UserControl.Resources>
+		<controllers:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+	</UserControl.Resources>
 
 	<ScrollViewer Height="342" VerticalAlignment="Top">
-		<Grid Background="#FFE5E5E5" Height="326">
-			<TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="1.87,6.083" Height="16">
-				<Run Text="Data"/>
-				<Run Text="Base Management"/>
-			</TextBlock>
-			<ComboBox HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top" Width="120"/>
-			<TextBlock HorizontalAlignment="Left" Margin="36,33,0,0" TextWrapping="Wrap" Text="Pracownik" VerticalAlignment="Top" RenderTransformOrigin="1.87,6.083"/>
-			<Button Content="Select table" HorizontalAlignment="Left" Margin="141,31,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.364,0.283"/>
-			<DataGrid HorizontalAlignment="Left" Margin="10,58,0,0" Width="553" Height="119" VerticalAlignment="Top"/>
+		<Grid Background="#FFE5E5E5">
+			<TextBlock Text="Table view" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="16"/>
+			<ComboBox x:Name="tableNamesComboBox" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="tableChosen"/>
+			<TextBlock Margin="16,34,0,0" Visibility="{Binding SelectedItem, ElementName=tableNamesComboBox, Converter={StaticResource NullToVisibilityConverter}}" IsHitTestVisible="False" Text="Select table" HorizontalAlignment="Left" VerticalAlignment="Top"  Height="16"/>
+
+			<DataGrid Name="tableContentDataGrid" Margin="10,58,10,10"/>
 		</Grid>
 	</ScrollViewer>
 </UserControl>

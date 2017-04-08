@@ -77,6 +77,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Database\DatabaseManager.cs" />
+    <Compile Include="Views\Controllers\NullToVisibilityConverter.cs" />
+    <Compile Include="Views\Controllers\PasswordBoxMonitor.cs" />
     <Compile Include="Views\DatabaseTab.xaml.cs">
       <DependentUpon>DatabaseTab.xaml</DependentUpon>
     </Compile>
@@ -86,7 +88,6 @@
     <Compile Include="Views\ManagementTab.xaml.cs">
       <DependentUpon>ManagementTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controllers\PasswordBoxMonitor.cs" />
     <Compile Include="Views\Controllers\TextInputToVisibilityConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

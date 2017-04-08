@@ -7,17 +7,7 @@
              mc:Ignorable="d" Height="365" Width="590">
 
 	<Grid Background="#FFE5E5E5">
-		<TreeView x:Name="treeView" HorizontalAlignment="Left" Height="348" VerticalAlignment="Top" Width="251" Margin="10,10,0,0">
-			<TreeViewItem Header="Admin" IsExpanded="True">
-				<TreeViewItem Header="user1 [Staff Leader]" HorizontalAlignment="Left" Width="352" IsExpanded="True">
-					<TreeViewItem Header="JanKowalski [Engineer]" HorizontalAlignment="Left" Width="352" IsExpanded="True">
-						<TreeViewItem Header="NikolaTesla [Technician]" HorizontalAlignment="Left" Width="333"/>
-						<TreeViewItem Header="AlbertEinstein [Technician]" HorizontalAlignment="Left" Width="333"/>
-					</TreeViewItem>
-					<TreeViewItem Header="MariaSkłodowskaCurie [Engineer]" HorizontalAlignment="Left" Width="352"/>
-				</TreeViewItem>
-			</TreeViewItem>
-		</TreeView>
+		<DataGrid Name="userstDataGrid" Margin="10,10,0,10" HorizontalAlignment="Left" Width="264"/>
 		<Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="86" Margin="279,10,0,0" VerticalAlignment="Top" Width="301">
 			<Grid>
 				<TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Permissions" VerticalAlignment="Top"/>

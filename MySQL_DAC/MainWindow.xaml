@@ -13,10 +13,10 @@
 				<local:LogInTab/>
 			</TabItem>
 			<TabItem Header="Database">
-				<local:DatabaseTab/>
+				<local:DatabaseTab x:Name="databaseTab"/>
 			</TabItem>
 			<TabItem Header="Management Panel">
-				<local:ManagementTab/>
+				<local:ManagementTab x:Name="managementTab"/>
 			</TabItem>
 		</TabControl>
 	</Grid>

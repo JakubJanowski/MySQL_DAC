@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace MySQL_DAC {
+namespace MySQL_DAC.Views.Controllers {
 	public class PasswordBoxMonitor: DependencyObject {
 		public static bool GetIsMonitoring(DependencyObject obj) {
 			return (bool)obj.GetValue(IsMonitoringProperty);

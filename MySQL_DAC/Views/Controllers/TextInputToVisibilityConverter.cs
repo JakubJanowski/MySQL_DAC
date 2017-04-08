@@ -8,7 +8,7 @@ using System.Windows.Data;
 using System.Windows;
 
 
-namespace MySQL_DAC {
+namespace MySQL_DAC.Views.Controllers {
     public class TextInputToVisibilityConverter : IMultiValueConverter {
         public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
             // Always test MultiValueConverter inputs for non-null

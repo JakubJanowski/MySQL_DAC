@@ -14,7 +14,8 @@ namespace MySQL_DAC {
 
 		private void loginButton_Click(object sender, RoutedEventArgs e) {
 
-			if (DatabaseManager.Connect(usernameTextBox.Text, passwordBox.Password)) {
+			//if (DatabaseManager.Connect(usernameTextBox.Text, passwordBox.Password)) {
+			if (DatabaseManager.Connect("root", "root")) {
 				((MainWindow)Application.Current.MainWindow).DatabaseTabUserControl.tableNamesComboBox.ItemsSource = DatabaseManager.GetTableNames();
 				((MainWindow)Application.Current.MainWindow).ManagementTabUserControl.LoadUsers();
 			}

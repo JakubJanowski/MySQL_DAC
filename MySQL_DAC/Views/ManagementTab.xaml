@@ -4,41 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MySQL_DAC"
-             mc:Ignorable="d" Height="365" Width="590">
-
+             xmlns:database="clr-namespace:MySQL_DAC.Database"
+             mc:Ignorable="d"
+			 d:DesignHeight="340" d:DesignWidth="600">
+	
 	<Grid Background="#FFE5E5E5">
-		<DataGrid Name="userstDataGrid" Margin="10,10,0,10" HorizontalAlignment="Left" Width="264"/>
-		<Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="86" Margin="279,10,0,0" VerticalAlignment="Top" Width="301">
-			<Grid>
-				<TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Permissions" VerticalAlignment="Top"/>
-				<ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top" Width="120" >
-					<ComboBoxItem Content="Awaria" HorizontalAlignment="Left" Width="118"/>
-					<ComboBoxItem Content="Jest na zmianie" HorizontalAlignment="Left" Width="118"/>
-					<ComboBoxItem Content="Parametry reaktora" HorizontalAlignment="Left" Width="118"/>
-					<ComboBoxItem Content="Pracownik" HorizontalAlignment="Left" Width="118"/>
-					<ComboBoxItem Content="Reaktor" HorizontalAlignment="Left" Width="118"/>
-					<ComboBoxItem Content="Zatrudnienie" HorizontalAlignment="Left" Width="118"/>
-				</ComboBox>
-				<CheckBox x:Name="addCheckBox" Content="Add" HorizontalAlignment="Left" Margin="10,58,0,0" VerticalAlignment="Top" IsEnabled="False" IsChecked="True"/>
-				<CheckBox x:Name="deleteCheckBox" Content="Delete" HorizontalAlignment="Left" Margin="57,58,0,0" VerticalAlignment="Top" IsEnabled="False"/>
-				<CheckBox x:Name="editCheckBox" Content="Edit" HorizontalAlignment="Left" Margin="116,58,0,0" VerticalAlignment="Top"/>
-				<CheckBox x:Name="viewCheckBox" Content="View" HorizontalAlignment="Left" Margin="161,58,0,0" VerticalAlignment="Top"/>
-				<CheckBox x:Name="delegationCheckBox" Content="Delegation" HorizontalAlignment="Left" Margin="211,58,0,0" VerticalAlignment="Top"/>
-			</Grid>
-		</Border>
-		<Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="257" Margin="279,101,0,0" VerticalAlignment="Top" Width="301">
-			<Grid>
-				<TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Login:" VerticalAlignment="Top"/>
-				<TextBlock x:Name="loginTextBlock" HorizontalAlignment="Left" Margin="47,10,0,0" TextWrapping="Wrap" Text="NikolaTesla" VerticalAlignment="Top"/>
-				<TextBlock HorizontalAlignment="Left" Margin="10,31,0,0" TextWrapping="Wrap" Text="Name:" VerticalAlignment="Top"/>
-				<TextBlock x:Name="nameTextBlock" HorizontalAlignment="Left" Margin="49,31,0,0" TextWrapping="Wrap" Text="Nikola Tesla" VerticalAlignment="Top"/>
-				<TextBlock HorizontalAlignment="Left" Margin="10,52,0,0" TextWrapping="Wrap" Text="Birth date:" VerticalAlignment="Top"/>
-				<TextBlock x:Name="birthDateTextBlock" HorizontalAlignment="Left" Margin="69,52,0,0" TextWrapping="Wrap" Text="29.03.1980" VerticalAlignment="Top"/>
-				<TextBlock HorizontalAlignment="Left" Margin="10,73,0,0" TextWrapping="Wrap" Text="Email:" VerticalAlignment="Top"/>
-				<TextBlock x:Name="emailTextBlock" HorizontalAlignment="Left" Margin="46,73,0,0" TextWrapping="Wrap" Text="nikola.tesla@gmail.com" VerticalAlignment="Top"/>
-				<TextBlock HorizontalAlignment="Left" Margin="10,94,0,0" TextWrapping="Wrap" Text="Position:" VerticalAlignment="Top"/>
-				<TextBlock x:Name="positionTextBlock" HorizontalAlignment="Left" Margin="60,94,0,0" TextWrapping="Wrap" Text="Technician" VerticalAlignment="Top"/>
-			</Grid>
-		</Border>
+		<DataGrid Name="usersDataGrid" Margin="10,10,10,10" CanUserAddRows="False" AutoGeneratingColumn="usersDataGrid_AutoGeneratingColumn" Loaded="usersDataGrid_Loaded"/>
 	</Grid>
 </UserControl>

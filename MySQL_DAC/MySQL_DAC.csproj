@@ -77,6 +77,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Database\DatabaseManager.cs" />
+    <Compile Include="Database\EnumConverter.cs" />
+    <Compile Include="Database\Permissions.cs" />
+    <Compile Include="Database\SchemaPermissions.cs" />
     <Compile Include="Views\Controllers\NullToVisibilityConverter.cs" />
     <Compile Include="Views\Controllers\PasswordBoxMonitor.cs" />
     <Compile Include="Views\DatabaseTab.xaml.cs">

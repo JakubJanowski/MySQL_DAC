@@ -12,7 +12,7 @@
 		<controllers:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 	</UserControl.Resources>
 
-	<ScrollViewer Height="342" VerticalAlignment="Top">
+	<ScrollViewer>
 		<Grid Background="#FFE5E5E5">
 			<TextBlock Text="Table view" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="16"/>
 			<ComboBox x:Name="tableNamesComboBox" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="tableChosen"/>

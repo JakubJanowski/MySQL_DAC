@@ -8,9 +8,6 @@ using System.Windows.Controls;
 using MySQL_DAC.Database;
 
 namespace MySQL_DAC {
-	/// <summary>
-	/// Interaction logic for ManagementTab.xaml
-	/// </summary>
 	public partial class ManagementTab: UserControl {
 		private DataTable usersTable = new DataTable();
 		const int nOfPermissions = 43;

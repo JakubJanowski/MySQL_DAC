@@ -1,24 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using MySql.Data.MySqlClient;
-using MySQL_DAC;
 
-namespace MySQL_DAC {
+namespace MySQL_DAC.Database {
 	static class DatabaseManager {
 		private const string databaseName = "test";
 		static private MySqlConnection connection;
-		//public void Connect(string username, SecureString password) {}
 
 		static public bool Connect(string username, string password) {
-			//username = "root";
-			//password = "root";
 			connection = new MySqlConnection();
 			connection.ConnectionString = "server=127.0.0.1;uid=" + username + ";pwd=" + password + ";database=" + databaseName + ";";
 
@@ -46,10 +36,6 @@ namespace MySQL_DAC {
 		static public void Close() {
 			connection.Close();
 		}
-		
-		//static public DataSet ExecuteQuery(string query) {
-		//	return new DataSet();
-		//}
 
 		internal static void GetTableContents(string tableName, ref DataSet dataSet) {
 			MySqlDataAdapter adapter = new MySqlDataAdapter("SELECT * FROM " + tableName, connection);

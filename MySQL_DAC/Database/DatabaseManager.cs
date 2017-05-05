@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows;
 using MySql.Data.MySqlClient;
@@ -7,6 +8,8 @@ namespace MySQL_DAC.Database {
 	static class DatabaseManager {
 		private const string databaseName = "test";
 		static private MySqlConnection connection;
+		private static Dictionary<string, MySqlDataAdapter> adapter;
+		private static MySqlDataAdapter userAdapter;
 
 		static public bool Connect(string username, string password) {
 			connection = new MySqlConnection();
@@ -14,6 +17,12 @@ namespace MySQL_DAC.Database {
 
 			try {
 				connection.Open();
+				using (MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '" + databaseName + "';", connection)) {
+					using (MySqlDataReader reader = cmd.ExecuteReader()) {
+						reader.Read();
+						adapter = new Dictionary<string, MySqlDataAdapter>(reader.GetInt32(0));
+					}
+				}
 				return true;
 			} catch (MySqlException ex) {
 				switch (ex.Number) {
@@ -38,15 +47,28 @@ namespace MySQL_DAC.Database {
 		}
 
 		internal static void GetTableContents(string tableName, ref DataSet dataSet) {
-			MySqlDataAdapter adapter = new MySqlDataAdapter("SELECT * FROM " + tableName, connection);
-			adapter.MissingSchemaAction = MissingSchemaAction.AddWithKey;
-			adapter.Fill(dataSet, tableName);
+			if (!adapter.ContainsKey(tableName)) {
+				adapter[tableName] = new MySqlDataAdapter("SELECT * FROM " + tableName, connection);
+				adapter[tableName].MissingSchemaAction = MissingSchemaAction.AddWithKey;
+				MySqlCommandBuilder commandBuilder = new MySqlCommandBuilder(adapter[tableName]);
+				adapter[tableName].DeleteCommand = commandBuilder.GetDeleteCommand();
+				adapter[tableName].InsertCommand = commandBuilder.GetInsertCommand();
+				adapter[tableName].UpdateCommand = commandBuilder.GetUpdateCommand();
+			}
+			adapter[tableName].Fill(dataSet, tableName);
 		}
 
+		//internal static void GetUsers(ref DataTable usersTable) {
+		//	if (userAdapter == null)
+		//		userAdapter = new MySqlDataAdapter("SELECT * FROM mysql.user", connection);
+		//	userAdapter.MissingSchemaAction = MissingSchemaAction.AddWithKey;
+		//	userAdapter.Fill(usersTable);
+		//}
 		internal static void GetUsers(ref DataTable usersTable) {
-			MySqlDataAdapter adapter = new MySqlDataAdapter("SELECT * FROM mysql.user", connection);
-			adapter.MissingSchemaAction = MissingSchemaAction.AddWithKey;
-			adapter.Fill(usersTable);
+			if (userAdapter == null)
+				userAdapter = new MySqlDataAdapter("SELECT * FROM permissions", connection);
+			userAdapter.MissingSchemaAction = MissingSchemaAction.AddWithKey;
+			userAdapter.Fill(usersTable);
 		}
 
 		static public List<string> GetTableNames() {
@@ -58,6 +80,10 @@ namespace MySQL_DAC.Database {
 				}
 			}
 			return tableNamesList;
+		}
+
+		static public void SetTableContents(string tableName, ref DataSet dataSet) {
+				adapter[tableName].Update(dataSet.Tables[tableName].Select(null, null, DataViewRowState.Deleted | DataViewRowState.ModifiedCurrent | DataViewRowState.Added));
 		}
 	}
 }

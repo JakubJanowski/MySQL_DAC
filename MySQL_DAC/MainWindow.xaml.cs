@@ -1,13 +1,11 @@
-﻿using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
+using MySQL_DAC.Views;
 
 namespace MySQL_DAC {
 	public partial class MainWindow: Window {
-		public DatabaseTab DatabaseTabUserControl { get { return databaseTab; } }
-		public ManagementTab ManagementTabUserControl { get { return managementTab; } }
-
 		public MainWindow() {
-            InitializeComponent();
+			DataContext = new LogInView();
+			InitializeComponent();
         }
     }
 }

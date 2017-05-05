@@ -3,21 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MySQL_DAC"
+        xmlns:views="clr-namespace:MySQL_DAC.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="405" Width="720">
-
+        Title="enemenenemeniniememenene Protector System®" Height="405" Width="720">
 	<Grid>
-		<TabControl x:Name="tabControl" TabStripPlacement="Left">
-			<TabItem Header="Log in">
-				<local:LogInTab/>
-			</TabItem>
-			<TabItem Header="Database">
-				<local:DatabaseTab x:Name="databaseTab"/>
-			</TabItem>
-			<TabItem Header="Management Panel">
-				<local:ManagementTab x:Name="managementTab"/>
-			</TabItem>
-		</TabControl>
+		<ContentControl Content="{Binding}" />
 	</Grid>
 </Window>

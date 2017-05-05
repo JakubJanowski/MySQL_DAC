@@ -2,24 +2,24 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using MySQL_DAC.Database;
 
-namespace MySQL_DAC {
-	public partial class ManagementTab: UserControl {
+namespace MySQL_DAC.Views.UserPermissions {
+	public partial class UserPermissionsView: UserControl {
 		private DataTable usersTable = new DataTable();
+		private MainView mainView;
 		const int nOfPermissions = 43;
 		static private Dictionary<string, Permissions> schemaPermissionDictionary = new Dictionary<string, Permissions>(nOfPermissions);
 		static private Dictionary<string, Permissions> permissionDictionary = new Dictionary<string, Permissions>(nOfPermissions);
 		
-		static ManagementTab() {
+		static UserPermissionsView() {
 			permissionDictionary.Add("Select_priv", Permissions.Select);
 			permissionDictionary.Add("Insert_priv", Permissions.Insert);
 			permissionDictionary.Add("Update_priv", Permissions.Update);
-			permissionDictionary.Add("Delete_priv", Permissions.Delete);
-			permissionDictionary.Add("Create_priv", Permissions.Create);
+			///permissionDictionary.Add("Delete_priv", Permissions.Delete);
+			///permissionDictionary.Add("Create_priv", Permissions.Create);
 			permissionDictionary.Add("Drop_priv", Permissions.Drop);
 			permissionDictionary.Add("Reload_priv", Permissions.Reload);
 			permissionDictionary.Add("Shutdown_priv", Permissions.Shutdown);
@@ -28,7 +28,7 @@ namespace MySQL_DAC {
 			permissionDictionary.Add("Grant_priv", Permissions.GrantOption);
 			permissionDictionary.Add("References_priv", Permissions.References);
 			permissionDictionary.Add("Index_priv", Permissions.Index);
-			permissionDictionary.Add("Alter_priv", Permissions.Alter);
+			///permissionDictionary.Add("Alter_priv", Permissions.Alter);
 			permissionDictionary.Add("Show_db_priv", Permissions.ShowDatabases);
 			permissionDictionary.Add("Super_priv", Permissions.Super);
 			permissionDictionary.Add("Create_tmp_table_priv", Permissions.CreateTemporaryTables);
@@ -38,8 +38,8 @@ namespace MySQL_DAC {
 			permissionDictionary.Add("Repl_client_priv", Permissions.ReplicationClient);
 			permissionDictionary.Add("Create_view_priv", Permissions.CreateView);
 			permissionDictionary.Add("Show_view_priv", Permissions.ShowView);
-			permissionDictionary.Add("Create_routine_priv", Permissions.CreateRoutine);
-			permissionDictionary.Add("Alter_routine_priv", Permissions.AlterRoutine);
+			//////permissionDictionary.Add("Create_routine_priv", Permissions.CreateRoutine);
+			///permissionDictionary.Add("Alter_routine_priv", Permissions.AlterRoutine);
 			permissionDictionary.Add("Create_user_priv", Permissions.CreateUser);
 			permissionDictionary.Add("Event_priv", Permissions.Event);
 			permissionDictionary.Add("Trigger_priv", Permissions.Trigger);
@@ -60,11 +60,13 @@ namespace MySQL_DAC {
 			permissionDictionary.Add("account_locked", Permissions.None);///
 		}
 
-		public ManagementTab() {
+		public UserPermissionsView(MainView mainView) {
 			InitializeComponent();
+			this.mainView = mainView;
 		}
 
-		internal void LoadUsers() {
+		[Obsolete]
+		internal void LoadUsers_obsolete() {
 			DatabaseManager.GetUsers(ref usersTable);
 			var tableNames = DatabaseManager.GetTableNames();
 			Permissions permissions;
@@ -73,7 +75,7 @@ namespace MySQL_DAC {
 				foreach (DataColumn dc in usersTable.Columns) {
 					Debug.WriteLine(dc.ColumnName);
 				}
-				foreach(DataRow row in usersTable.Rows) {
+				foreach (DataRow row in usersTable.Rows) {
 					permissions = Permissions.None;
 					foreach (KeyValuePair<string, Permissions> entry in permissionDictionary) {
 						if (row[entry.Key].ToString().Equals("Y")) {
@@ -82,6 +84,49 @@ namespace MySQL_DAC {
 					}
 					row[tableName] = permissions.ToString();
 				}
+			}
+			usersDataGrid.ItemsSource = usersTable.DefaultView;
+		}
+
+		internal void LoadUsers() {
+			DatabaseManager.GetUsers(ref usersTable);
+			var tableNames = DatabaseManager.GetTableNames();
+			Permissions[] permissions = new Permissions[3];
+			//Array tab = new Array();
+			
+			//ColumnS.clear;
+			for (int i = 2; i < 18; i++) {
+				if (i < 2) {
+					i++;
+					continue;
+				}
+				int r = 0;
+				foreach (DataRow row in usersTable.Rows) {
+					permissions[r] = (Permissions)row[i];
+					row[i] = DBNull.Value;///dc.ColumnName; instead of i
+					r++;
+				}
+				usersTable.Columns.Add(usersTable.Columns[i].ColumnName + "_", typeof(string));
+				//dc.DataType = typeof(string);
+				r = 0;
+				foreach (DataRow row in usersTable.Rows) {
+					row[usersTable.Columns[i].ColumnName + "_"] = permissions[r].ToString();
+					r++;
+				}
+				i++;
+			}
+			for (int j = 17; j >= 2; j--) {
+				usersTable.Columns.RemoveAt(j);
+			}
+			foreach (var tableName in tableNames) {
+				/*foreach (DataColumn dc in usersTable.Columns) {
+					Debug.WriteLine(dc.ColumnName);
+				}
+				foreach (DataRow row in usersTable.Rows) {
+					permissions = (Permissions)row[tableName];
+					row[tableName]./////
+					row[tableName] = permissions.ToString();
+				}*/
 			}
 			usersDataGrid.ItemsSource = usersTable.DefaultView;
 		}
@@ -100,6 +145,14 @@ namespace MySQL_DAC {
 				if (column.ActualWidth > 150)
 					column.Width = 150;
 			}
+		}
+
+		private void addUserButton_Click(object sender, RoutedEventArgs e) {
+			mainView.DataContext = mainView.addUserView;
+		}
+
+		private void editUserButton_Click(object sender, RoutedEventArgs e) {
+			mainView.DataContext = mainView.editPermissionsView;
 		}
 	}
 }

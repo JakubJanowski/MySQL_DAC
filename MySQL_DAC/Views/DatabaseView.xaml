@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="MySQL_DAC.DatabaseTab"
+﻿<UserControl x:Class="MySQL_DAC.Views.DatabaseView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MySQL_DAC"
+             xmlns:local="clr-namespace:MySQL_DAC.Views"
 			 xmlns:controllers="clr-namespace:MySQL_DAC.Views.Controllers"
              mc:Ignorable="d" 
              d:DesignHeight="340" d:DesignWidth="600">
@@ -18,7 +18,7 @@
 			<ComboBox x:Name="tableNamesComboBox" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="tableChosen"/>
 			<TextBlock Margin="16,34,0,0" Visibility="{Binding SelectedItem, ElementName=tableNamesComboBox, Converter={StaticResource NullToVisibilityConverter}}" IsHitTestVisible="False" Text="Select table" HorizontalAlignment="Left" VerticalAlignment="Top"  Height="16"/>
 
-			<DataGrid Name="tableContentDataGrid" Margin="10,58,10,10"/>
+			<DataGrid Name="tableContentDataGrid" Margin="10,58,10,10" CellEditEnding="tableContentDataGrid_CellEditEnding" SelectedCellsChanged="tableContentDataGrid_SelectedCellsChanged" />
 		</Grid>
 	</ScrollViewer>
 </UserControl>

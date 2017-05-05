@@ -60,11 +60,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Views\DatabaseTab.xaml">
+    <Page Include="Views\MainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\LogInTab.xaml">
+    <Page Include="Views\DatabaseView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LogInView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -76,27 +80,44 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Views\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Database\DatabaseManager.cs" />
     <Compile Include="Database\EnumConverter.cs" />
     <Compile Include="Database\Permissions.cs" />
     <Compile Include="Database\SchemaPermissions.cs" />
     <Compile Include="Views\Controllers\NullToVisibilityConverter.cs" />
     <Compile Include="Views\Controllers\PasswordBoxMonitor.cs" />
-    <Compile Include="Views\DatabaseTab.xaml.cs">
-      <DependentUpon>DatabaseTab.xaml</DependentUpon>
+    <Compile Include="Views\DatabaseView.xaml.cs">
+      <DependentUpon>DatabaseView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\LogInTab.xaml.cs">
-      <DependentUpon>LogInTab.xaml</DependentUpon>
+    <Compile Include="Views\LogInView.xaml.cs">
+      <DependentUpon>LogInView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ManagementTab.xaml.cs">
-      <DependentUpon>ManagementTab.xaml</DependentUpon>
+    <Compile Include="Views\UserPermissions\AddUserView.xaml.cs">
+      <DependentUpon>AddUserView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserPermissions\EditPermissionsView.xaml.cs">
+      <DependentUpon>EditPermissionsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserPermissions\UserPermissionsView.xaml.cs">
+      <DependentUpon>UserPermissionsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controllers\TextInputToVisibilityConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\ManagementTab.xaml">
+    <Page Include="Views\UserPermissions\AddUserView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserPermissions\EditPermissionsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserPermissions\UserPermissionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

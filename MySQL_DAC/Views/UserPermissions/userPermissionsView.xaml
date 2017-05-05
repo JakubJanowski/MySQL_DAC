@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="MySQL_DAC.Views.UserPermissions.UserPermissionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MySQL_DAC.Views"
+             xmlns:database="clr-namespace:MySQL_DAC.Database"
+             mc:Ignorable="d"
+			 d:DesignHeight="340" d:DesignWidth="600">
+
+	<ScrollViewer>
+		<Grid Background="#FFE5E5E5">
+			<Button x:Name="addUserButton" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="addUserButton_Click"/>
+			<Button x:Name="editUserButton" Content="Edit" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="editUserButton_Click"/>
+			<DataGrid Name="usersDataGrid" Margin="10,35,10,10" CanUserAddRows="False" AutoGeneratingColumn="usersDataGrid_AutoGeneratingColumn" Loaded="usersDataGrid_Loaded">
+				<DataGrid.CellStyle>
+					<Style TargetType="DataGridCell" >
+						<Style.Triggers>
+							<Trigger Property="IsEditing" Value="True">
+								<Setter Property="Template">
+									<Setter.Value>
+										<ControlTemplate TargetType="DataGridCell">
+											<TextBox Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content.Text, Mode=TwoWay, UpdateSourceTrigger=Default}" TextWrapping="Wrap" />
+										</ControlTemplate>
+									</Setter.Value>
+								</Setter>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+				</DataGrid.CellStyle>
+			</DataGrid>
+		</Grid>
+	</ScrollViewer>
+</UserControl>

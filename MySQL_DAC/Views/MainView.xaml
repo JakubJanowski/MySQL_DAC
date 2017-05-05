@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="MySQL_DAC.Views.MainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MySQL_DAC.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+
+	<UserControl.Resources>
+		<Style TargetType="TextBlock" x:Key="HoverUnderlineStyle">
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="TextBlock.TextDecorations" Value="Underline" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+	</UserControl.Resources>
+
+	<StackPanel Background="#FFE5E5E5">
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+			<TextBlock x:Name="loginTextBlock" TextAlignment="Right"/>
+			<Button Click="Button_Click" Margin="20,0">
+				<Button.Template>
+					<ControlTemplate TargetType="Button">
+						<ContentPresenter />
+					</ControlTemplate>
+				</Button.Template>
+				<TextBlock Text="Log out" Style="{StaticResource HoverUnderlineStyle}"/>
+			</Button>
+		</StackPanel>
+		<Separator />
+		<TabControl x:Name="tabControl" TabStripPlacement="Top">
+			<TabItem Header="Database">
+				<local:DatabaseView x:Name="databaseView"/>
+			</TabItem>
+			<TabItem Header="Permissions">
+				<ContentControl Content="{Binding}" />
+			</TabItem>
+		</TabControl>
+	</StackPanel>
+
+</UserControl>

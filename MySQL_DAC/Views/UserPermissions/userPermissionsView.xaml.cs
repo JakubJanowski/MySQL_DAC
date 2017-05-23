@@ -129,7 +129,7 @@ namespace MySQL_DAC.Views.UserPermissions {
 
 		private void editUserButton_Click(object sender, RoutedEventArgs e) {
 			string selectedUserName = (string)((DataRowView)usersDataGrid.SelectedItem)["user"];
-			mainView.editPermissionsView = new EditPermissionsView(mainView, selectedUserName, userPermissions[selectedUserName]);
+			mainView.editPermissionsView = new EditPermissionsView(mainView, selectedUserName, userPermissions[selectedUserName], userId);
 			mainView.DataContext = mainView.editPermissionsView;
 		}
 		

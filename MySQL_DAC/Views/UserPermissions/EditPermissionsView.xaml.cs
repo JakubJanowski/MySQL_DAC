@@ -9,13 +9,15 @@ namespace MySQL_DAC.Views.UserPermissions {
 		private Dictionary<string, Permissions> userPermissions = new Dictionary<string, Permissions>();
 		private Dictionary<string, Permissions> previousPermissions = new Dictionary<string, Permissions>();
 		private string tableName;
+		private int userId;
 
-		public EditPermissionsView(MainView mainView, string username, Dictionary<string, Permissions> userPermissions) {
+		public EditPermissionsView(MainView mainView, string username, Dictionary<string, Permissions> userPermissions, int userId) {
 			InitializeComponent();
 			this.mainView = mainView;
-			usernameTextBlock.Text = username;
+			this.userId = userId;
 			this.userPermissions = userPermissions;
 			this.previousPermissions = new Dictionary<string, Permissions>(userPermissions);
+			usernameTextBlock.Text = username;
 			tableNameComboBox.ItemsSource = DatabaseManager.GetTableNames();
 			if (mainView.thisUserPermissions["userPermissions"].HasFlag(Permissions.DelegateCreateUser)) {
 				createUsersPermissionCheckBox.IsEnabled = true;
@@ -87,7 +89,8 @@ namespace MySQL_DAC.Views.UserPermissions {
 		}
 
 		private void confirmUserButton_Click(object sender, RoutedEventArgs e) {
-			DatabaseManager.UpdateUser(usernameTextBlock.Text, userPermissions, previousPermissions);
+			DatabaseManager.UpdateUser(usernameTextBlock.Text, userPermissions, previousPermissions, userId);
+			mainView.userPermissionsView.Refresh();
 			mainView.DataContext = mainView.userPermissionsView;
 		}
 

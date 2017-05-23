@@ -1,134 +1,85 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using MySQL_DAC.Database;
 
 namespace MySQL_DAC.Views.UserPermissions {
 	public partial class UserPermissionsView: UserControl {
-		private DataTable usersTable = new DataTable();
+		private DataTable usersTable;
 		private MainView mainView;
-		const int nOfPermissions = 43;
-		static private Dictionary<string, Permissions> schemaPermissionDictionary = new Dictionary<string, Permissions>(nOfPermissions);
-		static private Dictionary<string, Permissions> permissionDictionary = new Dictionary<string, Permissions>(nOfPermissions);
-		
-		static UserPermissionsView() {
-			permissionDictionary.Add("Select_priv", Permissions.Select);
-			permissionDictionary.Add("Insert_priv", Permissions.Insert);
-			permissionDictionary.Add("Update_priv", Permissions.Update);
-			///permissionDictionary.Add("Delete_priv", Permissions.Delete);
-			///permissionDictionary.Add("Create_priv", Permissions.Create);
-			permissionDictionary.Add("Drop_priv", Permissions.Drop);
-			permissionDictionary.Add("Reload_priv", Permissions.Reload);
-			permissionDictionary.Add("Shutdown_priv", Permissions.Shutdown);
-			permissionDictionary.Add("Process_priv", Permissions.Process);
-			permissionDictionary.Add("File_priv", Permissions.File);
-			permissionDictionary.Add("Grant_priv", Permissions.GrantOption);
-			permissionDictionary.Add("References_priv", Permissions.References);
-			permissionDictionary.Add("Index_priv", Permissions.Index);
-			///permissionDictionary.Add("Alter_priv", Permissions.Alter);
-			permissionDictionary.Add("Show_db_priv", Permissions.ShowDatabases);
-			permissionDictionary.Add("Super_priv", Permissions.Super);
-			permissionDictionary.Add("Create_tmp_table_priv", Permissions.CreateTemporaryTables);
-			permissionDictionary.Add("Lock_tables_priv", Permissions.LockTables);
-			permissionDictionary.Add("Execute_priv", Permissions.Execute);
-			permissionDictionary.Add("Repl_slave_priv", Permissions.ReplicationSlave);
-			permissionDictionary.Add("Repl_client_priv", Permissions.ReplicationClient);
-			permissionDictionary.Add("Create_view_priv", Permissions.CreateView);
-			permissionDictionary.Add("Show_view_priv", Permissions.ShowView);
-			//////permissionDictionary.Add("Create_routine_priv", Permissions.CreateRoutine);
-			///permissionDictionary.Add("Alter_routine_priv", Permissions.AlterRoutine);
-			permissionDictionary.Add("Create_user_priv", Permissions.CreateUser);
-			permissionDictionary.Add("Event_priv", Permissions.Event);
-			permissionDictionary.Add("Trigger_priv", Permissions.Trigger);
-			permissionDictionary.Add("Create_tablespace_priv", Permissions.CreateTablespace);
-			permissionDictionary.Add("ssl_type", Permissions.None);///
-			permissionDictionary.Add("ssl_cipher", Permissions.None);///
-			permissionDictionary.Add("x509_issuer", Permissions.None);///
-			permissionDictionary.Add("x509_subject", Permissions.None);///
-			permissionDictionary.Add("max_questions", Permissions.None);///
-			permissionDictionary.Add("max_updates", Permissions.None);///
-			permissionDictionary.Add("max_connections", Permissions.None);///
-			permissionDictionary.Add("max_user_connections", Permissions.None);///
-			permissionDictionary.Add("plugin", Permissions.None);///
-			permissionDictionary.Add("authentication_string", Permissions.None);///
-			permissionDictionary.Add("password_expired", Permissions.None);///
-			permissionDictionary.Add("password_last_changed", Permissions.None);///
-			permissionDictionary.Add("password_lifetime", Permissions.None);///
-			permissionDictionary.Add("account_locked", Permissions.None);///
-		}
+		private Dictionary<string, Dictionary<string, Permissions>> userPermissions;
+		private int userId;
+		private string username;
 
 		public UserPermissionsView(MainView mainView) {
 			InitializeComponent();
 			this.mainView = mainView;
 		}
 
-		[Obsolete]
-		internal void LoadUsers_obsolete() {
-			DatabaseManager.GetUsers(ref usersTable);
-			var tableNames = DatabaseManager.GetTableNames();
-			Permissions permissions;
-			foreach (var tableName in tableNames) {
-				usersTable.Columns.Add(tableName, typeof(string));
-				foreach (DataColumn dc in usersTable.Columns) {
-					Debug.WriteLine(dc.ColumnName);
-				}
-				foreach (DataRow row in usersTable.Rows) {
-					permissions = Permissions.None;
-					foreach (KeyValuePair<string, Permissions> entry in permissionDictionary) {
-						if (row[entry.Key].ToString().Equals("Y")) {
-							permissions |= entry.Value;
-						}
-					}
-					row[tableName] = permissions.ToString();
-				}
+		internal void LoadUsers(string username) {
+			DataTable usersTmpTable = new DataTable();
+			usersTable = new DataTable();
+			DatabaseManager.GetUsers(ref usersTmpTable);
+			userPermissions = new Dictionary<string, Dictionary<string, Permissions>>(usersTmpTable.Rows.Count);
+			this.username = username;
+
+			foreach (DataColumn column in usersTmpTable.Columns) {
+				if (column.ColumnName.Equals("idpermissions") || column.ColumnName.Equals("giverId"))
+					usersTable.Columns.Add(column.ColumnName, typeof(int));
+				else
+					usersTable.Columns.Add(column.ColumnName, typeof(string));
 			}
+
+			foreach (DataRow row in usersTmpTable.Rows) {
+				int i = 0;
+				DataRow newRow = usersTable.NewRow();
+				userPermissions.Add((string)row["user"], new Dictionary<string, Permissions>());
+				for (; i < 2; i++)
+					newRow[i] = row[i];
+				for (; i < usersTmpTable.Columns.Count - 1; i++) {
+					newRow[i] = ((Permissions)(row[i])).ShortNotation();
+					userPermissions[(string)row["user"]][usersTmpTable.Columns[i].ColumnName] = (Permissions)row[i];
+				}
+				newRow[i] = row[i];
+				usersTable.Rows.Add(newRow);
+
+				if (((string)row["user"]).Equals(username))
+					userId = (int)row["idpermissions"];
+			}
+
 			usersDataGrid.ItemsSource = usersTable.DefaultView;
 		}
 
-		internal void LoadUsers() {
-			DatabaseManager.GetUsers(ref usersTable);
-			var tableNames = DatabaseManager.GetTableNames();
-			Permissions[] permissions = new Permissions[3];
-			//Array tab = new Array();
-			
-			//ColumnS.clear;
-			for (int i = 2; i < 18; i++) {
-				if (i < 2) {
-					i++;
-					continue;
-				}
-				int r = 0;
-				foreach (DataRow row in usersTable.Rows) {
-					permissions[r] = (Permissions)row[i];
-					row[i] = DBNull.Value;///dc.ColumnName; instead of i
-					r++;
-				}
-				usersTable.Columns.Add(usersTable.Columns[i].ColumnName + "_", typeof(string));
-				//dc.DataType = typeof(string);
-				r = 0;
-				foreach (DataRow row in usersTable.Rows) {
-					row[usersTable.Columns[i].ColumnName + "_"] = permissions[r].ToString();
-					r++;
-				}
-				i++;
+		internal Dictionary<string, Permissions> GetPermissions(string username) {
+			return userPermissions[username];
+		}
+
+		internal void Prepare(string username) {
+			bool canEditUserPermissions = false;
+			if (!mainView.thisUserPermissions["userPermissions"].HasFlag(Permissions.CreateUser))
+				addUserButton.IsEnabled = false;
+			if (!mainView.thisUserPermissions["userPermissions"].HasFlag(Permissions.ViewPermissions)) {
+				usersDataGrid.Visibility = Visibility.Collapsed;
+				editUserButton.Visibility = Visibility.Collapsed;
+				editInfoTextBlock.Visibility = Visibility.Collapsed;
 			}
-			for (int j = 17; j >= 2; j--) {
-				usersTable.Columns.RemoveAt(j);
-			}
-			foreach (var tableName in tableNames) {
-				/*foreach (DataColumn dc in usersTable.Columns) {
-					Debug.WriteLine(dc.ColumnName);
+
+			foreach (var p in userPermissions[username]) {
+				if ((p.Value & Permissions.DelegateAllNormal) > 0) {
+					canEditUserPermissions = true;
+					break;
 				}
-				foreach (DataRow row in usersTable.Rows) {
-					permissions = (Permissions)row[tableName];
-					row[tableName]./////
-					row[tableName] = permissions.ToString();
-				}*/
 			}
-			usersDataGrid.ItemsSource = usersTable.DefaultView;
+
+			if (!canEditUserPermissions) {
+				editUserButton.Visibility = Visibility.Collapsed;
+				editInfoTextBlock.Visibility = Visibility.Collapsed;
+			}
+
 		}
 
 		private void usersDataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e) {
@@ -140,19 +91,79 @@ namespace MySQL_DAC.Views.UserPermissions {
 			}
 		}
 
-		private void usersDataGrid_Loaded(object sender, RoutedEventArgs e) {
-			foreach (var column in usersDataGrid.Columns) {
-				if (column.ActualWidth > 150)
-					column.Width = 150;
+		private void setStyle() {
+			int i = 0;
+			Style style1 = new Style(typeof(DataGridCell));
+			style1.Setters.Add(new Setter(BorderThicknessProperty, new Thickness(0)));
+			Style style2 = new Style(typeof(DataGridCell));
+			style2.Setters.Add(new Setter(FontFamilyProperty, new FontFamily("Consolas")));
+			style2.Setters.Add(new Setter(BorderThicknessProperty, new Thickness(0)));
+
+			for (; i < 2 && i < usersDataGrid.Columns.Count; i++) {
+				usersDataGrid.Columns[i].CellStyle = style1;
+				if (usersDataGrid.Columns[i].ActualWidth > 150)
+					usersDataGrid.Columns[i].Width = 150;
+			}
+			for (; i < usersDataGrid.Columns.Count - 1; i++) {
+				usersDataGrid.Columns[i].CellStyle = style2;
+				if (usersDataGrid.Columns[i].ActualWidth > 150)
+					usersDataGrid.Columns[i].Width = 150;
+			}
+			if (i < usersDataGrid.Columns.Count) {
+				usersDataGrid.Columns[i].CellStyle = style1;
+				if (usersDataGrid.Columns[i].ActualWidth > 150)
+					usersDataGrid.Columns[i].Width = 150;
 			}
 		}
 
+		internal void Refresh() {
+			LoadUsers(username);
+			setStyle();
+		}
+
+
 		private void addUserButton_Click(object sender, RoutedEventArgs e) {
+			mainView.addUserView = new AddUserView(mainView, userId);
 			mainView.DataContext = mainView.addUserView;
 		}
 
 		private void editUserButton_Click(object sender, RoutedEventArgs e) {
+			string selectedUserName = (string)((DataRowView)usersDataGrid.SelectedItem)["user"];
+			mainView.editPermissionsView = new EditPermissionsView(mainView, selectedUserName, userPermissions[selectedUserName]);
 			mainView.DataContext = mainView.editPermissionsView;
+		}
+		
+		private void refreshButton_Click(object sender, RoutedEventArgs e) {
+			Refresh();
+		}
+
+		private void usersDataGrid_Loaded(object sender, RoutedEventArgs e) {
+			setStyle();
+		}
+
+		private void usersDataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) {
+			if (usersDataGrid.SelectedItem == null)
+				return;
+			int? giverId;
+			if (((DataRowView)usersDataGrid.SelectedItem)["giverId"] == DBNull.Value)
+				giverId = null;
+			else
+				giverId = (int)((DataRowView)usersDataGrid.SelectedItem)["giverId"];
+			while (giverId != userId && giverId != null) {
+				var row = usersTable.AsEnumerable().SingleOrDefault(r => r.Field<int>("idpermissions") == giverId);
+				if (row["giverId"] == DBNull.Value)
+					giverId = null;
+				else
+					giverId = (int)row["giverId"];
+			}
+			if (giverId == userId) {
+				editInfoTextBlock.Visibility = Visibility.Collapsed;
+				editUserButton.IsEnabled = true;
+			} else if (giverId == null) {
+				editInfoTextBlock.Text = "You do not have enough rights to edit this user";
+				editInfoTextBlock.Visibility = Visibility.Visible;
+				editUserButton.IsEnabled = false;
+			}
 		}
 	}
 }

@@ -77,6 +77,6 @@
 			<PasswordBox x:Name="passwordBox" Background="Transparent" BorderBrush="Indigo" Style="{DynamicResource PasswordBoxStyle}"/>
 		</Grid>
 		<Button x:Name="loginButton" Content="Log in" HorizontalAlignment="Center" Margin="-100,105,0,0" VerticalAlignment="Top" Width="74" Click="loginButton_Click"/>
-		<Button x:Name="cancelButton" Content="Cancel" HorizontalAlignment="Center" Margin="100,105,0,0" VerticalAlignment="Top" Width="74"/>
+		<Button x:Name="closeButton" Content="Close" HorizontalAlignment="Center" Margin="100,105,0,0" VerticalAlignment="Top" Width="74" Click="closeButton_Click"/>
 	</Grid>
 </UserControl>

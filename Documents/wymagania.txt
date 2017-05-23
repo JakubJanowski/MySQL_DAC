@@ -1,0 +1,4 @@
+suid select update insert delete
+SUID all with deleagtion
+s--d
+historia zmian uprawnien

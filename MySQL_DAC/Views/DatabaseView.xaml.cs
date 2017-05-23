@@ -20,6 +20,7 @@ namespace MySQL_DAC.Views {
 			try {
 				tableContentDataGrid.ItemsSource = tableContentDataSet.Tables[tableName].DefaultView;
 			} catch (NullReferenceException ex) {
+				int a = 0;
 
 			}
 		}

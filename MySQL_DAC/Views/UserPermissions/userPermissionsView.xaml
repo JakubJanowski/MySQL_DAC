@@ -12,23 +12,11 @@
 		<Grid Background="#FFE5E5E5">
 			<Button x:Name="addUserButton" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="addUserButton_Click"/>
 			<Button x:Name="editUserButton" Content="Edit" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="editUserButton_Click"/>
-			<DataGrid Name="usersDataGrid" Margin="10,35,10,10" CanUserAddRows="False" AutoGeneratingColumn="usersDataGrid_AutoGeneratingColumn" Loaded="usersDataGrid_Loaded">
-				<DataGrid.CellStyle>
-					<Style TargetType="DataGridCell" >
-						<Style.Triggers>
-							<Trigger Property="IsEditing" Value="True">
-								<Setter Property="Template">
-									<Setter.Value>
-										<ControlTemplate TargetType="DataGridCell">
-											<TextBox Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content.Text, Mode=TwoWay, UpdateSourceTrigger=Default}" TextWrapping="Wrap" />
-										</ControlTemplate>
-									</Setter.Value>
-								</Setter>
-							</Trigger>
-						</Style.Triggers>
-					</Style>
-				</DataGrid.CellStyle>
-			</DataGrid>
+			<TextBlock x:Name="editInfoTextBlock" Margin="170,12,0,0" Text="Select user from the table to edit." HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FF666666"/>
+			<Button x:Name="refreshButton" Content="Refresh" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" Click="refreshButton_Click"/>
+			<DataGrid x:Name="usersDataGrid" Margin="10,35,10,10" CanUserAddRows="False" AutoGeneratingColumn="usersDataGrid_AutoGeneratingColumn" Loaded="usersDataGrid_Loaded" IsReadOnly="True" SelectionMode="Single" SelectedCellsChanged="usersDataGrid_SelectedCellsChanged"/>
+
+
 		</Grid>
 	</ScrollViewer>
 </UserControl>

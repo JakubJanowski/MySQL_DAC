@@ -34,7 +34,7 @@
 			<TabItem Header="Database">
 				<local:DatabaseView x:Name="databaseView"/>
 			</TabItem>
-			<TabItem Header="Permissions">
+			<TabItem x:Name="permissionsTab"  Header="Permissions">
 				<ContentControl Content="{Binding}" />
 			</TabItem>
 		</TabControl>

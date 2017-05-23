@@ -13,5 +13,9 @@ namespace MySQL_DAC.Views {
 				((MainWindow)Application.Current.MainWindow).DataContext = new MainView(usernameTextBox.Text);
 			}
 		}
+
+		private void closeButton_Click(object sender, RoutedEventArgs e) {
+			((MainWindow)Application.Current.MainWindow).Close();
+		}
 	}
 }

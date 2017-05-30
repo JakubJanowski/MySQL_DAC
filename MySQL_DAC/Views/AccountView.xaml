@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="MySQL_DAC.Views.AccountView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MySQL_DAC.Views"
+			 xmlns:controllers="clr-namespace:MySQL_DAC.Views.Controllers"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="600">
+
+	<Grid Background="#FFE5E5E5">
+		<StackPanel HorizontalAlignment="Center" Width="245">
+			<StackPanel Margin="0,50,0,0" Orientation="Horizontal">
+				<TextBlock Text="Username:"/>
+				<TextBlock x:Name="usernameTextBlock" Margin="10,0,0,0" FontWeight="Bold"/>
+			</StackPanel>
+			<Button x:Name="deleteAccountButton" Margin="0,10,0,0" Width="105" Content="Delete account" Click="deleteAccountButton_Click"/>
+			<Button x:Name="changePasswordButton" Margin="0,10" Content="Change password" Width="105" Click="changePasswordButton_Click" />
+			<StackPanel x:Name="changePasswordStackPanel" Margin="0,10,0,0" Visibility="Collapsed">
+				<StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+					<TextBlock TextWrapping="Wrap" Text="Old password:" Width="125"/>
+					<PasswordBox x:Name="oldPasswordBox" Height="20" Width="120"/>
+				</StackPanel>
+				<StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+					<TextBlock TextWrapping="Wrap" Text="New password:" Width="125"/>
+					<PasswordBox x:Name="newPasswordBox" Height="20" Width="120" PasswordChanged="checkPasswords" LostFocus="checkPasswords"/>
+				</StackPanel>
+				<StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+					<TextBlock TextWrapping="Wrap" Text="Repeat new password:" Width="125"/>
+					<PasswordBox x:Name="repeatedNewPasswordBox" Height="20" Width="120" PasswordChanged="checkPasswords" LostFocus="checkPasswords"/>
+				</StackPanel>
+				<TextBlock x:Name="infoTextBox" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Collapsed" Foreground="#FFCF2F2F"/>
+				<StackPanel Margin="0,20,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
+					<Button Margin="10" Content="Save" Width="75" Click="savePasswordButton_Click" />
+					<Button Margin="10" Content="Cancel" Width="75" Click="cancelChangePasswordButton_Click" />
+				</StackPanel>
+			</StackPanel>
+			<TextBlock x:Name="successTextBox" Text="Password changed successfully!" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed" Foreground="#FF2FCF2F"/>
+			<Button Margin="10" Content="Return" Width="75" Click="returnButton_Click" />
+		</StackPanel>
+	</Grid>
+</UserControl>

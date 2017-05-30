@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:MySQL_DAC.Views"
 			 xmlns:controllers="clr-namespace:MySQL_DAC.Views.Controllers"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="600">
 
 	<UserControl.Resources>
 		<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -71,12 +71,17 @@
 	<Grid Background="#FFE5E5E5">
 		<Grid Background="White" HorizontalAlignment="Center" Height="23" Margin="0,40,0,0" VerticalAlignment="Top" Width="180">
 			<TextBlock Margin="5, 2" Text="Username" Foreground="LightSteelBlue" Visibility="{Binding Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=usernameTextBox}" />
-			<TextBox x:Name="usernameTextBox" Background="Transparent" BorderBrush="Indigo" />
+			<TextBox x:Name="usernameTextBox" Background="Transparent" BorderBrush="Indigo" Loaded="usernameTextBox_Loaded" KeyUp="usernameTextBoxEnterPressed"/>
 		</Grid>
 		<Grid Background="White" HorizontalAlignment="Center" Height="23" Margin="0,70,0,0" VerticalAlignment="Top" Width="180">
-			<PasswordBox x:Name="passwordBox" Background="Transparent" BorderBrush="Indigo" Style="{DynamicResource PasswordBoxStyle}"/>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="5*"/>
+				<ColumnDefinition Width="4*"/>
+			</Grid.ColumnDefinitions>
+			<PasswordBox x:Name="passwordBox" Background="Transparent" BorderBrush="Indigo" Style="{DynamicResource PasswordBoxStyle}" KeyUp="passwordBoxEnterPressed" Grid.ColumnSpan="2"/>
 		</Grid>
 		<Button x:Name="loginButton" Content="Log in" HorizontalAlignment="Center" Margin="-100,105,0,0" VerticalAlignment="Top" Width="74" Click="loginButton_Click"/>
 		<Button x:Name="closeButton" Content="Close" HorizontalAlignment="Center" Margin="100,105,0,0" VerticalAlignment="Top" Width="74" Click="closeButton_Click"/>
+		<Button x:Name="settingsButton" Content="Settings" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" Click="settingsButton_Click"/>
 	</Grid>
 </UserControl>

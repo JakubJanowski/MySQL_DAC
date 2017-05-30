@@ -28,7 +28,7 @@ namespace MySQL_DAC.Views.UserPermissions {
 			this.username = username;
 
 			foreach (DataColumn column in usersTmpTable.Columns) {
-				if (column.ColumnName.Equals("idpermissions") || column.ColumnName.Equals("giverId"))
+				if (column.ColumnName.Equals("id") || column.ColumnName.Equals("ancestorId"))
 					usersTable.Columns.Add(column.ColumnName, typeof(int));
 				else
 					usersTable.Columns.Add(column.ColumnName, typeof(string));
@@ -40,15 +40,16 @@ namespace MySQL_DAC.Views.UserPermissions {
 				userPermissions.Add((string)row["user"], new Dictionary<string, Permissions>());
 				for (; i < 2; i++)
 					newRow[i] = row[i];
-				for (; i < usersTmpTable.Columns.Count - 1; i++) {
+				for (; i < usersTmpTable.Columns.Count - 2; i++) {
 					newRow[i] = ((Permissions)(row[i])).ShortNotation();
 					userPermissions[(string)row["user"]][usersTmpTable.Columns[i].ColumnName] = (Permissions)row[i];
 				}
 				newRow[i] = row[i];
+				newRow[i+1] = row[i+1];
 				usersTable.Rows.Add(newRow);
 
 				if (((string)row["user"]).Equals(username))
-					userId = (int)row["idpermissions"];
+					userId = (int)row["id"];
 			}
 
 			usersDataGrid.ItemsSource = usersTable.DefaultView;
@@ -56,6 +57,29 @@ namespace MySQL_DAC.Views.UserPermissions {
 
 		internal Dictionary<string, Permissions> GetPermissions(string username) {
 			return userPermissions[username];
+		}
+
+		internal bool HasTakenOver(string username) {
+			var row = usersTable.AsEnumerable().SingleOrDefault(r => r.Field<string>("user") == username);
+			return row["tookOverFrom"] != DBNull.Value;
+		}
+		internal int? GetAncestorId(string username) {
+			var row = usersTable.AsEnumerable().SingleOrDefault(r => r.Field<string>("user") == username);
+			if (row["ancestorId"] == DBNull.Value)
+				return null;
+			return (int)row["ancestorId"];
+		}
+		internal int GetId(string username) {
+			var row = usersTable.AsEnumerable().SingleOrDefault(r => r.Field<string>("user") == username);
+			return (int)row["id"];
+		}
+
+		internal List<string> GetUsersWithAncestorId(int ancestorId) {
+			List<string> userList = new List<string>();
+			var rows = usersTable.AsEnumerable().Where(r => r.Field<int?>("ancestorId") == ancestorId);
+			foreach(var row in rows)
+				userList.Add((string)row["user"]);
+			return userList;
 		}
 
 		internal void Prepare(string username) {
@@ -104,12 +128,12 @@ namespace MySQL_DAC.Views.UserPermissions {
 				if (usersDataGrid.Columns[i].ActualWidth > 150)
 					usersDataGrid.Columns[i].Width = 150;
 			}
-			for (; i < usersDataGrid.Columns.Count - 1; i++) {
+			for (; i < usersDataGrid.Columns.Count - 2; i++) {
 				usersDataGrid.Columns[i].CellStyle = style2;
 				if (usersDataGrid.Columns[i].ActualWidth > 150)
 					usersDataGrid.Columns[i].Width = 150;
 			}
-			if (i < usersDataGrid.Columns.Count) {
+			for (; i < usersDataGrid.Columns.Count; i++) {
 				usersDataGrid.Columns[i].CellStyle = style1;
 				if (usersDataGrid.Columns[i].ActualWidth > 150)
 					usersDataGrid.Columns[i].Width = 150;
@@ -144,22 +168,22 @@ namespace MySQL_DAC.Views.UserPermissions {
 		private void usersDataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) {
 			if (usersDataGrid.SelectedItem == null)
 				return;
-			int? giverId;
-			if (((DataRowView)usersDataGrid.SelectedItem)["giverId"] == DBNull.Value)
-				giverId = null;
+			int? ancestorId;
+			if (((DataRowView)usersDataGrid.SelectedItem)["ancestorId"] == DBNull.Value)
+				ancestorId = null;
 			else
-				giverId = (int)((DataRowView)usersDataGrid.SelectedItem)["giverId"];
-			while (giverId != userId && giverId != null) {
-				var row = usersTable.AsEnumerable().SingleOrDefault(r => r.Field<int>("idpermissions") == giverId);
-				if (row["giverId"] == DBNull.Value)
-					giverId = null;
+				ancestorId = (int)((DataRowView)usersDataGrid.SelectedItem)["ancestorId"];
+			while (ancestorId != userId && ancestorId != null && ancestorId != -1) {
+				var row = usersTable.AsEnumerable().SingleOrDefault(r => r.Field<int>("id") == ancestorId);
+				if (row["ancestorId"] == DBNull.Value)
+					ancestorId = null;
 				else
-					giverId = (int)row["giverId"];
+					ancestorId = (int)row["ancestorId"];
 			}
-			if (giverId == userId) {
+			if (ancestorId == userId || ancestorId == -1) {
 				editInfoTextBlock.Visibility = Visibility.Collapsed;
 				editUserButton.IsEnabled = true;
-			} else if (giverId == null) {
+			} else if (ancestorId == null) {
 				editInfoTextBlock.Text = "You do not have enough rights to edit this user";
 				editInfoTextBlock.Visibility = Visibility.Visible;
 				editUserButton.IsEnabled = false;

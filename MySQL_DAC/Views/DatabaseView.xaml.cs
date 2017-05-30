@@ -11,6 +11,8 @@ namespace MySQL_DAC.Views {
 		private DataSet tableContentDataSet = new DataSet();
 		private bool pendingEdit = false;
 		private string tableName;
+		private DataTable dummyDataTable;
+		private DataRow importedRow;
 
 		public DatabaseView() {
 			InitializeComponent();
@@ -38,11 +40,19 @@ namespace MySQL_DAC.Views {
 
 		private void tableChosen(object sender, SelectionChangedEventArgs e) {
 			RefreshTableContents();
+			refreshButton.IsEnabled = true;
 
-			if (mainView.thisUserPermissions[tableName].HasFlag(Permissions.Add))
+			if (mainView.thisUserPermissions[tableName].HasFlag(Permissions.Add)) {
 				addRowDataGrid.Visibility = Visibility.Visible;
-			else
+				addRowButton.Visibility = Visibility.Visible;
+				addRowButton.IsEnabled = false;
+				addRowsTextBlock.Visibility = Visibility.Visible;
+			}
+			else {
 				addRowDataGrid.Visibility = Visibility.Collapsed;
+				addRowButton.Visibility = Visibility.Collapsed;
+				addRowsTextBlock.Visibility = Visibility.Collapsed;
+			}
 			if (mainView.thisUserPermissions[tableName].HasFlag(Permissions.Delete))
 				tableContentDataGrid.CanUserDeleteRows = true;
 			else
@@ -52,6 +62,12 @@ namespace MySQL_DAC.Views {
 			else
 				tableContentDataGrid.IsReadOnly = true;
 
+			applyButton.IsEnabled = false;
+			if (mainView.thisUserPermissions[tableName].HasFlag(Permissions.Add) || 
+				mainView.thisUserPermissions[tableName].HasFlag(Permissions.Delete) || 
+				mainView.thisUserPermissions[tableName].HasFlag(Permissions.Edit))
+				applyButton.IsEnabled = true;
+
 			try {
 				tableContentDataGrid.ItemsSource = tableContentDataSet.Tables[tableName].DefaultView;
 				} catch (NullReferenceException ex) {
@@ -59,29 +75,10 @@ namespace MySQL_DAC.Views {
 			}
 
 			if (mainView.thisUserPermissions[tableName].HasFlag(Permissions.Add)) {
-				DataTable dummyDataView = tableContentDataSet.Tables[tableName].Clone();
-				dummyDataView.Clear();
-				addRowDataGrid.ItemsSource = dummyDataView.DefaultView;
+				dummyDataTable = tableContentDataSet.Tables[tableName].Clone();
+				dummyDataTable.Clear();
+				addRowDataGrid.ItemsSource = dummyDataTable.DefaultView;
 			}
-		}
-
-		private object Clone(object input) {
-			object cloned;
-			string inputVisualAsString = System.Windows.Markup.XamlWriter.Save(input);
-			if (inputVisualAsString == null)
-				return null;
-			
-			using (System.IO.MemoryStream stream = new System.IO.MemoryStream(inputVisualAsString.Length)) {
-				using (System.IO.StreamWriter sw = new System.IO.StreamWriter(stream)) {
-					sw.Write(inputVisualAsString);
-					sw.Flush();
-					stream.Seek(0, System.IO.SeekOrigin.Begin);
-					
-					cloned = System.Windows.Markup.XamlReader.Load(stream) as object;
-				}
-			}
-
-			return cloned;
 		}
 
 		private void tableContentDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e) {
@@ -90,21 +87,66 @@ namespace MySQL_DAC.Views {
 				if (column != null) {
 					pendingEdit = true;
 				}
-				else {
-					int a = 0;
-				}
 			}
 		}
 
 		private void tableContentDataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) {
 			if (pendingEdit) {
 				pendingEdit = false;
-				DatabaseManager.SetTableContents(tableName, ref tableContentDataSet);
+				//DatabaseManager.SetTableContents(tableName, ref tableContentDataSet);
 			}
 		}
 
 		private void refreshButton_Click(object sender, RoutedEventArgs e) {
 			RefreshTableContents();
+		}
+
+		private void addRowDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e) {
+			if (e.EditAction == DataGridEditAction.Commit) {
+				Action action = delegate {
+					if (((DataRowView)e.Row.Item).Row.RowState == DataRowState.Added) {
+						addRowDataGrid.CanUserAddRows = false;
+						importedRow = ((DataRowView)e.Row.Item).Row;
+						addRowButton.IsEnabled = true;
+					}
+				};
+				Dispatcher.BeginInvoke(action, System.Windows.Threading.DispatcherPriority.Background);
+			}
+		}
+
+		private object Clone(object input) {
+			object cloned;
+			string inputVisualAsString = System.Windows.Markup.XamlWriter.Save(input);
+			if (inputVisualAsString == null)
+				return null;
+
+			using (System.IO.MemoryStream stream = new System.IO.MemoryStream(inputVisualAsString.Length)) {
+				using (System.IO.StreamWriter sw = new System.IO.StreamWriter(stream)) {
+					sw.Write(inputVisualAsString);
+					sw.Flush();
+					stream.Seek(0, System.IO.SeekOrigin.Begin);
+
+					cloned = System.Windows.Markup.XamlReader.Load(stream) as object;
+				}
+			}
+
+			return cloned;
+		}
+
+		private void applyButton_Click(object sender, RoutedEventArgs e) {
+			Logger.WriteEntry($"{mainView.username} modified table {tableName} with {tableContentDataSet.GetChanges().Tables[tableName].Present()}");
+			DatabaseManager.SetTableContents(tableName, ref tableContentDataSet);
+		}
+
+		private void addRowButton_Click(object sender, RoutedEventArgs e) {
+			try {
+				tableContentDataSet.Tables[tableName].ImportRow(importedRow);
+				dummyDataTable.Clear();
+				addRowButton.IsEnabled = false;
+				addRowDataGrid.CanUserAddRows = true;
+			} catch (Exception ex) {
+				MessageBox.Show(ex.Message);
+			}
 		}
 	}
 }

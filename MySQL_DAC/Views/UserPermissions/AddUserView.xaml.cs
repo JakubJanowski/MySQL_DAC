@@ -28,6 +28,14 @@ namespace MySQL_DAC.Views.UserPermissions {
 				viewUserPermissionsCheckBox.IsEnabled = true;
 				delegateViewUserPermissionsCheckBox.IsEnabled = true;
 			}
+			if (mainView.thisUserPermissions["userPermissions"].HasFlag(Permissions.DelegateCanTakeOver)) {
+				canTakeOverCheckBox.IsEnabled = true;
+				delegateCanTakeOverCheckBox.IsEnabled = true;
+			}
+			else {
+				canTakeOverCheckBox.IsEnabled = false;
+				delegateCanTakeOverCheckBox.IsEnabled = false;
+			}
 			userPermissions.Add("userPermissions", Permissions.UserPermissions);
 		}
 
@@ -69,8 +77,8 @@ namespace MySQL_DAC.Views.UserPermissions {
 
 			checkAllButton.IsEnabled = true;
 			uncheckAllButton.IsEnabled = true;
-		
-			if (!userPermissions.ContainsKey(tableName)) 
+
+			if (!userPermissions.ContainsKey(tableName))
 				userPermissions.Add(tableName, Permissions.None);
 
 			addPermissionCheckBox.IsChecked = userPermissions[tableName].HasFlag(Permissions.Add);
@@ -95,15 +103,29 @@ namespace MySQL_DAC.Views.UserPermissions {
 				infoTextBox.Visibility = Visibility.Visible;
 				return;
 			}
-			if(DatabaseManager.GetUsernames().Contains(usernameTextBox.Text)) {
+			if (DatabaseManager.GetUsernames().Contains(usernameTextBox.Text)) {
 				usernameInfoTextBox.Text = "Username is already taken!";
 				usernameInfoTextBox.Visibility = Visibility.Visible;
 				return;
 			}
-			DatabaseManager.AddUser(usernameTextBox.Text, passwordBox.Password, userPermissions, userId);
+			if (relinquishCheckBox.IsChecked == true) {
+				RemoveAllPermissionsFromChildren(userId);
+				DatabaseManager.AddUser(usernameTextBox.Text, passwordBox.Password, userPermissions, userId, mainView.username, userId, mainView.thisUserPermissions);
+				mainView.Refresh();
+			}
+			else {
+				DatabaseManager.AddUser(usernameTextBox.Text, passwordBox.Password, userPermissions, userId);
+				Logger.WriteEntry($"{mainView.username} added user {usernameTextBox.Text} with permissions [{userPermissions.Present()}]");
+			}
 
 			mainView.userPermissionsView.Refresh();
 			mainView.DataContext = mainView.userPermissionsView;
+		}
+		private void RemoveAllPermissionsFromChildren(int ancestorId) {
+			foreach (string username in mainView.userPermissionsView.GetUsersWithAncestorId(ancestorId)) {
+				RemoveAllPermissionsFromChildren(mainView.userPermissionsView.GetId(username));
+				DatabaseManager.RemoveAllPrivileges(username, mainView.thisUserPermissions);
+			}
 		}
 
 		private void cancelUserButton_Click(object sender, RoutedEventArgs e) {
@@ -281,7 +303,7 @@ namespace MySQL_DAC.Views.UserPermissions {
 			deleteUserPermissionCheckBox.IsChecked = true;
 			userPermissions["userPermissions"] |= Permissions.DeleteUser | Permissions.DelegateDeleteUser;
 		}
-		
+
 		private void viewUserPermissionsCheckBox_Checked(object sender, RoutedEventArgs e) {
 			userPermissions["userPermissions"] |= Permissions.ViewPermissions;
 		}
@@ -355,6 +377,33 @@ namespace MySQL_DAC.Views.UserPermissions {
 			delegateViewUserPermissionsCheckBox.IsChecked = false;
 		}
 		#endregion
+
 		#endregion
+
+		private void relinquishCheckBox_Checked(object sender, RoutedEventArgs e) {
+			warnTextBox.Text = "You will lose all permissions!";
+			warnTextBox.Visibility = Visibility.Visible;
+		}
+
+		private void relinquishCheckBox_Unchecked(object sender, RoutedEventArgs e) {
+			warnTextBox.Visibility = Visibility.Collapsed;
+		}
+
+		private void canTakeOverCheckBox_Checked(object sender, RoutedEventArgs e) {
+			userPermissions["userPermissions"] |= Permissions.CanTakeOver;
+		}
+
+		private void canTakeOverCheckBox_Unchecked(object sender, RoutedEventArgs e) {
+			userPermissions["userPermissions"] &= ~(Permissions.CanTakeOver | Permissions.DelegateCanTakeOver);
+			delegateCanTakeOverCheckBox.IsChecked = false;
+		}
+		private void delegateCanTakeOverCheckBox_Checked(object sender, RoutedEventArgs e) {
+			userPermissions["userPermissions"] |= Permissions.DelegateCanTakeOver | Permissions.CanTakeOver;
+			canTakeOverCheckBox.IsChecked = true;
+		}
+
+		private void delegateCanTakeOverCheckBox_Unchecked(object sender, RoutedEventArgs e) {
+			userPermissions["userPermissions"] &= ~Permissions.DelegateCanTakeOver;
+		}
 	}
 }

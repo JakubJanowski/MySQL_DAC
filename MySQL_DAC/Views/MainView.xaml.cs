@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -12,7 +13,7 @@ namespace MySQL_DAC.Views {
 		public AddUserView addUserView { get; set; }
 		public EditPermissionsView editPermissionsView { get; set; }
 		public Dictionary<string, Permissions> thisUserPermissions { get; set; }
-		private string username;
+		public string username;
 
 		public MainView() {
 			InitializeComponent();
@@ -21,21 +22,21 @@ namespace MySQL_DAC.Views {
 		public MainView(string username) {
 			this.username = username;
 			InitializeComponent();
-			Refresh();
 			DatabaseManager.SetMainView(this);
+			Refresh();
 			databaseView.SetMainView(this);
 		}
 
 		public void Refresh() {
 			List<string> tableNames;
-			tableNames = DatabaseManager.GetTableNames();
-			databaseView.tableNamesComboBox.ItemsSource = tableNames;
 			userPermissionsView = new UserPermissionsView(this);
 			userPermissionsView.LoadUsers(username);
 			thisUserPermissions = userPermissionsView.GetPermissions(username);
+			tableNames = DatabaseManager.GetTableNames();
+			databaseView.tableNamesComboBox.ItemsSource = tableNames;
 			DataContext = userPermissionsView;
 			if (!thisUserPermissions["userPermissions"].HasFlag(Permissions.ViewPermissions) && !thisUserPermissions["userPermissions"].HasFlag(Permissions.CreateUser)) {
-				DataContext = userPermissionsView = null;
+				DataContext = null;
 				tabControl.Items.Remove(permissionsTab);
 			}
 			else
@@ -49,12 +50,17 @@ namespace MySQL_DAC.Views {
 			}
 			loginTextBlock.Text = "Logged in as ";
 			loginTextBlock.Inlines.Add(new Bold(new Run(username)));
+			tableNames = DatabaseManager.GetTableNames();
 		}
 
 		// log out
-		private void Button_Click(object sender, RoutedEventArgs e) {
+		private void logOutButton_Click(object sender, RoutedEventArgs e) {
+			Logger.WriteEntry($"{username} logged out");
 			DatabaseManager.Close();
 			((MainWindow)Application.Current.MainWindow).DataContext = new LogInView();
+		}
+		private void editAccountButton_Click(object sender, RoutedEventArgs e) {
+			((MainWindow)Application.Current.MainWindow).DataContext = new AccountView(this);
 		}
 	}
 }

@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:MySQL_DAC.Views.UserPermissions"
              xmlns:controllers="clr-namespace:MySQL_DAC.Views.Controllers"
              mc:Ignorable="d" 
-             d:DesignHeight="400" d:DesignWidth="720">
+             d:DesignHeight="400" d:DesignWidth="900">
 
 	<UserControl.Resources>
 		<controllers:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
@@ -14,18 +14,27 @@
 
 	<Grid Background="#FFE5E5E5">
 		<StackPanel>
-			<TextBlock Margin="10,10" Text="Add new user" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold"/>
+			<TextBlock Margin="10,10" Text="Edit user" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold"/>
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
 				<StackPanel Margin="10,10" HorizontalAlignment="Left" VerticalAlignment="Top">
 					<StackPanel Orientation="Horizontal">
 						<TextBlock Text="Username:" HorizontalAlignment="Left" VerticalAlignment="Top" />
 						<TextBlock x:Name="usernameTextBlock" Margin="10,0,0,10" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" />
 					</StackPanel>
-					<Button Content="Change password"/>
+					<TextBlock x:Name="warnTextBox" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Collapsed" Foreground="#FFCF2F2F"/>
 					<StackPanel Margin="10" Orientation="Horizontal" HorizontalAlignment="Center">
 						<Button x:Name="confirmUserButton" Content="Confirm" Width="75" Click="confirmUserButton_Click"/>
 						<Button x:Name="cancelUserButton" Margin="20,0,0,0" Content="Cancel" Width="75" Click="cancelUserButton_Click"/>
 					</StackPanel>
+					<StackPanel Margin="20,10" Orientation="Horizontal" HorizontalAlignment="Left">
+						<CheckBox x:Name="relinquishCheckBox" Checked="relinquishCheckBox_Checked" Unchecked="relinquishCheckBox_Unchecked"/>
+						<TextBlock Margin="10,0,0,0" Text="Relinquish permissions"/>
+					</StackPanel>
+					<StackPanel Margin="20,0" Orientation="Horizontal" HorizontalAlignment="Left">
+						<CheckBox x:Name="becomeGiverCheckBox"/>
+						<TextBlock Margin="10,0,0,0" Text="Become direct ancestor"/>
+					</StackPanel>
+					<Button x:Name="deleteUserButton" Margin="10,10,0,0" Width="75" IsEnabled="False" Content="Delete user" HorizontalAlignment="Left" VerticalAlignment="Top" Click="deleteUserButton_Click"/>
 				</StackPanel>
 				<StackPanel>
 					<GroupBox Margin="0,10" Header="Table permissions" BorderThickness="1" BorderBrush="Gray" HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -37,25 +46,25 @@
 								<Button x:Name="uncheckAllButton" Margin="5" Content="Uncheck all" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75" IsEnabled="False" Click="uncheckAllButton_Click"/>
 							</StackPanel>
 							<StackPanel Orientation="Horizontal">
-								<StackPanel Margin="0,5,5,5" Width="84">
+								<StackPanel Margin="0,5,5,5" Width="115">
 									<TextBlock Margin="0,0,0,5" Text="Add" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 									<CheckBox x:Name="addPermissionCheckBox" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="False" Checked="addPermissionCheckBox_Checked" Unchecked="addPermissionCheckBox_Unchecked"/>
 									<TextBlock Margin="0,10,0,5" Text="Delegate add" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 									<CheckBox x:Name="delegateAddPermissionCheckBox" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="False" Checked="delegateAddPermissionCheckBox_Checked" Unchecked="delegateAddPermissionCheckBox_Unchecked"/>
 								</StackPanel>
-								<StackPanel Margin="5" Width="84">
+								<StackPanel Margin="5" Width="115">
 									<TextBlock Margin="0,0,0,5" Text="Delete" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 									<CheckBox x:Name="deletePermissionCheckBox" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="False" Checked="deletePermissionCheckBox_Checked" Unchecked="deletePermissionCheckBox_Unchecked"/>
 									<TextBlock Margin="0,10,0,5" Text="Delegate delete" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 									<CheckBox x:Name="delegateDeletePermissionCheckBox" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="False" Checked="delegateDeletePermissionCheckBox_Checked" Unchecked="delegateDeletePermissionCheckBox_Unchecked"/>
 								</StackPanel>
-								<StackPanel Margin="5" Width="84">
+								<StackPanel Margin="5" Width="115">
 									<TextBlock Margin="0,0,0,5" Text="Edit" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 									<CheckBox x:Name="editPermissionCheckBox" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="False" Checked="editPermissionCheckBox_Checked" Unchecked="editPermissionCheckBox_Unchecked"/>
 									<TextBlock Margin="0,10,0,5" Text="Delegate edit" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 									<CheckBox x:Name="delegateEditPermissionCheckBox" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="False" Checked="delegateEditPermissionCheckBox_Checked" Unchecked="delegateEditPermissionCheckBox_Unchecked"/>
 								</StackPanel>
-								<StackPanel Margin="5,5,0,5" Width="84">
+								<StackPanel Margin="5,5,0,5" Width="114">
 									<TextBlock Margin="0,0,0,5" Text="View" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 									<CheckBox x:Name="viewPermissionCheckBox" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="False" Checked="viewPermissionCheckBox_Checked" Unchecked="viewPermissionCheckBox_Unchecked"/>
 									<TextBlock Margin="0,10,0,5" Text="Delegate view" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -88,6 +97,12 @@
 									<CheckBox x:Name="viewUserPermissionsCheckBox" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="False" Checked="viewUserPermissionsCheckBox_Checked" Unchecked="viewUserPermissionsCheckBox_Unchecked"/>
 									<TextBlock Margin="0,10,0,5" Text="Delegate view" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 									<CheckBox x:Name="delegateViewUserPermissionsCheckBox" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="False" Checked="delegateViewUserPermissionsCheckBox_Checked" Unchecked="delegateViewUserPermissionsCheckBox_Unchecked"/>
+								</StackPanel>
+								<StackPanel Margin="5" Width="113">
+									<TextBlock Margin="0,0,0,5" Text="Can take over" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+									<CheckBox x:Name="canTakeOverCheckBox" IsEnabled="false" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="canTakeOverCheckBox_Checked" Unchecked="canTakeOverCheckBox_Unchecked"/>
+									<TextBlock Margin="0,10,0,5" Text="Delegate take over" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+									<CheckBox x:Name="delegateCanTakeOverCheckBox" IsEnabled="false" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="delegateCanTakeOverCheckBox_Checked" Unchecked="delegateCanTakeOverCheckBox_Unchecked"/>
 								</StackPanel>
 							</StackPanel>
 						</StackPanel>

@@ -18,9 +18,20 @@
 	</UserControl.Resources>
 
 	<StackPanel Background="#FFE5E5E5">
+		<Grid>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+			<Button Click="editAccountButton_Click" Margin="20,0">
+				<Button.Template>
+					<ControlTemplate TargetType="Button">
+						<ContentPresenter />
+					</ControlTemplate>
+				</Button.Template>
+				<TextBlock Text="Edit account" Style="{StaticResource HoverUnderlineStyle}"/>
+			</Button>
+		</StackPanel>
 		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 			<TextBlock x:Name="loginTextBlock" TextAlignment="Right"/>
-			<Button Click="Button_Click" Margin="20,0">
+			<Button Click="logOutButton_Click" Margin="20,0">
 				<Button.Template>
 					<ControlTemplate TargetType="Button">
 						<ContentPresenter />
@@ -28,7 +39,8 @@
 				</Button.Template>
 				<TextBlock Text="Log out" Style="{StaticResource HoverUnderlineStyle}"/>
 			</Button>
-		</StackPanel>
+			</StackPanel>
+		</Grid>
 		<Separator />
 		<TabControl x:Name="tabControl" TabStripPlacement="Top">
 			<TabItem Header="Database">

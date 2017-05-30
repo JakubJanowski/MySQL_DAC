@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:MySQL_DAC.Views"
         mc:Ignorable="d"
+		Closing="Window_Closing"
         Title="enemenenemeniniememenene Protector System®" 
 		Height="480" Width="720">
 	<Grid>

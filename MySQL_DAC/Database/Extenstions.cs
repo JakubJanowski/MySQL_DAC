@@ -61,12 +61,17 @@ namespace MySQL_DAC.Database {
 		public static string Present(this DataTable changes) {
 			string present = "{";
 			foreach (DataRow row in changes.Rows) {
+				if (row == null || row.RowState == DataRowState.Deleted) {
+					present += "{row deleted}, ";
+					continue;
+				}
 				present += "{";
 				for (int i = 0; i < row.ItemArray.Count(); i++)
 					present += $"{changes.Columns[i]}: {row.ItemArray[i].ToString()}, ";
 				present = present.Remove(present.Length - 2);
 				present += "}, ";
 			}
+			if(present.Length > 2)
 			present = present.Remove(present.Length - 2);
 			present += "}";
 			return present;

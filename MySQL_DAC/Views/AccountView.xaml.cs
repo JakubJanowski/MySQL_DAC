@@ -13,6 +13,7 @@ namespace MySQL_DAC.Views {
 		public AccountView(MainView mainView) {
 			InitializeComponent();
 			this.mainView = mainView;
+			usernameTextBlock.Text = mainView.username;
 		}
 
 		private void changePasswordButton_Click(object sender, RoutedEventArgs e) {

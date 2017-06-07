@@ -20,6 +20,7 @@ namespace MySQL_DAC.Database {
 		DeleteUser				= 0x0200,
 		ViewPermissions			= 0x0400,
 		CanTakeOver				= 0x0800,
+
 		DelegateCreateUser		= 0x1000,
 		DelegateDeleteUser		= 0x2000,
 		DelegateViewPermissions	= 0x4000,
@@ -29,8 +30,8 @@ namespace MySQL_DAC.Database {
 
 		AllNormal				= Add | Delete | Edit | View,
 		DelegateAllNormal		= DelegateAdd | DelegateDelete | DelegateEdit | DelegateView,
-		AllUser					= CreateUser | DeleteUser | ViewPermissions,
-		DelegateAllUser			= DelegateCreateUser | DelegateDeleteUser | DelegateViewPermissions,
+		AllUser					= CreateUser | DeleteUser | ViewPermissions | CanTakeOver | UserPermissions,
+		DelegateAllUser			= DelegateCreateUser | DelegateDeleteUser | DelegateViewPermissions | DelegateCanTakeOver,
 		All						= AllNormal | DelegateAllNormal | AllUser | DelegateAllUser
 	}
 }

@@ -71,14 +71,10 @@
 	<Grid Background="#FFE5E5E5">
 		<Grid Background="White" HorizontalAlignment="Center" Height="23" Margin="0,40,0,0" VerticalAlignment="Top" Width="180">
 			<TextBlock Margin="5, 2" Text="Username" Foreground="LightSteelBlue" Visibility="{Binding Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=usernameTextBox}" />
-			<TextBox x:Name="usernameTextBox" Background="Transparent" BorderBrush="Indigo" Loaded="usernameTextBox_Loaded" KeyUp="usernameTextBoxEnterPressed"/>
+			<TextBox x:Name="usernameTextBox" Background="Transparent" BorderBrush="Indigo" Loaded="usernameTextBox_Loaded" KeyDown="enterKeyDown" KeyUp="usernameTextBoxEnterPressed"/>
 		</Grid>
 		<Grid Background="White" HorizontalAlignment="Center" Height="23" Margin="0,70,0,0" VerticalAlignment="Top" Width="180">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="5*"/>
-				<ColumnDefinition Width="4*"/>
-			</Grid.ColumnDefinitions>
-			<PasswordBox x:Name="passwordBox" Background="Transparent" BorderBrush="Indigo" Style="{DynamicResource PasswordBoxStyle}" KeyUp="passwordBoxEnterPressed" Grid.ColumnSpan="2"/>
+			<PasswordBox x:Name="passwordBox" Background="Transparent" BorderBrush="Indigo" Style="{DynamicResource PasswordBoxStyle}" KeyDown="enterKeyDown" KeyUp="passwordBoxEnterPressed"/>
 		</Grid>
 		<Button x:Name="loginButton" Content="Log in" HorizontalAlignment="Center" Margin="-100,105,0,0" VerticalAlignment="Top" Width="74" Click="loginButton_Click"/>
 		<Button x:Name="closeButton" Content="Close" HorizontalAlignment="Center" Margin="100,105,0,0" VerticalAlignment="Top" Width="74" Click="closeButton_Click"/>

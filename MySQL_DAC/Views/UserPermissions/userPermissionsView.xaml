@@ -8,15 +8,15 @@
              mc:Ignorable="d"
 			 d:DesignHeight="340" d:DesignWidth="600">
 
-	<ScrollViewer>
-		<Grid Background="#FFE5E5E5">
-			<Button x:Name="addUserButton" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="addUserButton_Click"/>
-			<Button x:Name="editUserButton" Content="Edit" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="editUserButton_Click"/>
-			<TextBlock x:Name="editInfoTextBlock" Margin="170,12,0,0" Text="Select user from the table to edit." HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FF666666"/>
-			<Button x:Name="refreshButton" Content="Refresh" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" Click="refreshButton_Click"/>
-			<DataGrid x:Name="usersDataGrid" Margin="10,35,10,10" CanUserAddRows="False" AutoGeneratingColumn="usersDataGrid_AutoGeneratingColumn" Loaded="usersDataGrid_Loaded" IsReadOnly="True" SelectionMode="Single" SelectedCellsChanged="usersDataGrid_SelectedCellsChanged"/>
-
-
-		</Grid>
-	</ScrollViewer>
+	<Grid Background="#FFE5E5E5">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+		<Button x:Name="addUserButton" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="addUserButton_Click" Grid.Row="0"/>
+		<Button x:Name="editUserButton" Content="Edit" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="editUserButton_Click" Grid.Row="0"/>
+		<TextBlock x:Name="editInfoTextBlock" Margin="170,12,0,0" Text="Select user from the table to edit." HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FF666666" Grid.Row="0"/>
+		<Button x:Name="refreshButton" Content="Refresh" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" Click="refreshButton_Click" Grid.Row="0"/>
+		<DataGrid x:Name="usersDataGrid" Margin="10,10,10,0" CanUserAddRows="False" IsReadOnly="True" SelectionMode="Single" VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" Grid.Row="1" AutoGeneratingColumn="usersDataGrid_AutoGeneratingColumn" Loaded="usersDataGrid_Loaded" SelectedCellsChanged="usersDataGrid_SelectedCellsChanged"/>
+	</Grid>
 </UserControl>

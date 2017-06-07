@@ -46,7 +46,14 @@ namespace MySQL_DAC.Database {
 		static public bool Connect(string username, string password) {
 			connection = new MySqlConnection();
 			databaseName = Configure.DatabaseName;
-			connection.ConnectionString = $"server={Configure.ServerIP};uid={username};pwd={password};database={databaseName};";
+			//if (username.Equals("root") || username.Equals("admin") || username.Equals("mysql.sys")) {
+			//	MessageBox.Show("To prevent damage from unintentional actions during BSK project, access to administrative users has been blocked from this application.");
+			//	return false;
+			//}
+
+			connection.ConnectionString = $"server={Configure.ServerIP};port={Configure.Port};uid={username};pwd={password};database={databaseName};";
+			//connection.ConnectionString = $"server=mysql591.cp.az.pl;port=3306;uid=u6008378_ps1;pwd=Ps1MySql;database=db6008378_dac;";
+			//connection.ConnectionString = $"server={Configure.ServerIP};port=3306;uid={username};pwd={password};database={databaseName};";
 			//connection.ConnectionString = "server=127.0.0.1;uid=root;pwd=root;database=elektrownia;";
 			//connection.ConnectionString = "server=mysql591.cp.az.pl;port=3306;uid=u6008378_dac;pwd=KqcSGoz4W;database=" + databaseName + ";";
 			//connection.ConnectionString = "server=10.128.49.45;uid=" + username + ";pwd=" + password + ";database=" + databaseName + ";";
@@ -61,6 +68,9 @@ namespace MySQL_DAC.Database {
 				}
 				return true;
 			} catch (MySqlException ex) {
+				MessageBox.Show(ex.Message);
+				return false;
+			} catch (Exception ex) {
 				MessageBox.Show(ex.Message);
 				return false;
 			}
@@ -142,7 +152,7 @@ namespace MySQL_DAC.Database {
 				userAdapter.Fill(usersTable);
 			} catch (MySqlException ex) {
 				MessageBox.Show(ex.Message);
-				mainView.Refresh();
+				//mainView.Refresh();
 			}
 		}
 		internal static List<string> GetUsernames() {
@@ -181,16 +191,22 @@ namespace MySQL_DAC.Database {
 			return tableNamesList;
 		}
 
-		static public void SetTableContents(string tableName, ref DataSet dataSet) {
+		static public bool SetTableContents(string tableName, ref DataSet dataSet) {
 			try {
 				adapter[tableName].Update(dataSet.Tables[tableName].Select(null, null, DataViewRowState.Deleted | DataViewRowState.ModifiedCurrent | DataViewRowState.Added));
+				return true;
 			} catch (MySqlException ex) {
 				MessageBox.Show(ex.Message);
 				mainView.Refresh();
+				return false;
+			} catch (DBConcurrencyException ex) {
+				MessageBox.Show(ex.Message);
+				mainView.Refresh();
+				return false;
 			}
 		}
 
-		internal static void RemoveAllPrivileges(string username, Dictionary<string, Permissions> userPermissions) {
+		internal static void RemoveAllPrivileges(string username, Dictionary<string, Permissions> userPermissions, Dictionary<string, Permissions> editedUserPermissions) {
 			try {
 				MySqlCommand command;
 				List<string> tableNamesList = GetTableNames();
@@ -241,7 +257,7 @@ namespace MySQL_DAC.Database {
 						comma = true;
 					}
 
-					if (comma) {
+					if (comma && !editedUserPermissions[tableName].Equals(Permissions.None)) {
 						using (MySqlCommand cmd = new MySqlCommand($"{revokeCommand} ON {databaseName}.{tableName} FROM @username ;", connection)) {
 							cmd.Parameters.AddWithValue("@username", $"{username}");
 							cmd.Prepare();
@@ -315,10 +331,8 @@ namespace MySQL_DAC.Database {
 				else
 					command.Parameters.Add("?userPermissions", MySqlDbType.Int32).Value = (int)Permissions.None;
 				command.Parameters.Add("?user", MySqlDbType.VarChar).Value = username;
-
 				command.Prepare();
 				command.ExecuteNonQuery();
-
 
 
 				foreach (var tablePermissions in newPermissions) {
@@ -418,7 +432,7 @@ namespace MySQL_DAC.Database {
 
 				if (!grantUpdatePermissions && previousGrantUpdatePermissions) {
 					//using (MySqlCommand cmd = new MySqlCommand($"REVOKE UPDATE, GRANT OPTION ON {databaseName}.permissions FROM @username ;", connection)) {
-					using (MySqlCommand cmd = new MySqlCommand($"REVOKE UPDATE ON {databaseName}.permissions FROM @username ;", connection)) {
+					using (MySqlCommand cmd = new MySqlCommand($"UPDATE permissions SET userPermissions=?userPermissions WHERE user=?user FROM @username ;", connection)) {
 						cmd.Parameters.AddWithValue("@username", $"{username}");
 						cmd.Prepare();
 						cmd.ExecuteNonQuery();
@@ -429,6 +443,22 @@ namespace MySQL_DAC.Database {
 				mainView.Refresh();
 			}
 		}
+
+		internal static void RemoveCanTakeOver(string username, Permissions userPermissions) {
+			try {
+				MySqlCommand command;
+				command = connection.CreateCommand();
+				command.CommandText = "UPDATE permissions SET userPermissions=?userPermissions WHERE user=?user ;";
+				command.Parameters.Add("?userPermissions", MySqlDbType.Int32).Value = (int)(userPermissions);
+				command.Parameters.Add("?user", MySqlDbType.VarChar).Value = username;
+				command.Prepare();
+				command.ExecuteNonQuery();
+			} catch (MySqlException ex) {
+				MessageBox.Show(ex.Message);
+				mainView.Refresh();
+			}
+		}
+
 		internal static void SetPassword(string password) {
 			try {
 				using (MySqlCommand cmd = new MySqlCommand($"SET PASSWORD = @password ;", connection)) {
@@ -465,7 +495,7 @@ namespace MySQL_DAC.Database {
 			}
 		}
 
-		public static void AddUser(string username, string password, Dictionary<string, Permissions> userPermissions, int? ancestorId, string relinquishUser = null, int userId = 0, Dictionary<string, Permissions> relinquishUserPermissions = null) {
+		public static void AddUser(string username, string password, Dictionary<string, Permissions> userPermissions, int? ancestorId = -1) {
 			try {
 				List<string> tableNamesList = GetTableNames();
 				MySqlCommand command;
@@ -610,63 +640,32 @@ namespace MySQL_DAC.Database {
 				}
 				#endregion
 
-				if (relinquishUser != null) {
-					command = connection.CreateCommand();
-					command.CommandText = "INSERT INTO permissions(user";
-					command.Parameters.Add("?user", MySqlDbType.VarChar).Value = username;
 
-					foreach (string tableName in tableNamesList)
-						command.CommandText += "," + tableName;
-					command.CommandText += ",userPermissions,ancestorId) VALUES(?user";
-					foreach (string tableName in tableNamesList) {
-						command.CommandText += ",?" + tableName;
-						if (userPermissions.ContainsKey(tableName))
-							command.Parameters.Add("?" + tableName, MySqlDbType.Int32).Value = (int)userPermissions[tableName];
-						else
-							command.Parameters.Add("?" + tableName, MySqlDbType.Int32).Value = (int)Permissions.None;
-					}
-					if (userPermissions.ContainsKey("userPermissions"))
-						command.Parameters.Add("?userPermissions", MySqlDbType.Int32).Value = (int)userPermissions["userPermissions"];
-					else
-						command.Parameters.Add("?userPermissions", MySqlDbType.Int32).Value = (int)Permissions.None;
-					command.CommandText += ",?userPermissions,?ancestorId,?tookOverFrom)";
-					if (ancestorId == null)
-						command.Parameters.Add("?ancestorId", MySqlDbType.Int32).Value = DBNull.Value;
-					else
-						command.Parameters.Add("?ancestorId", MySqlDbType.Int32).Value = ancestorId;
-					command.Parameters.Add("?tookOverFrom", MySqlDbType.Int32).Value = userId;
-					command.Prepare();
-					command.ExecuteNonQuery();
+				command = connection.CreateCommand();
+				command.CommandText = "INSERT INTO permissions(user";
+				command.Parameters.Add("?user", MySqlDbType.VarChar).Value = username;
 
-					RemoveAllPrivileges(relinquishUser, relinquishUserPermissions);
+				foreach (string tableName in tableNamesList)
+					command.CommandText += "," + tableName;
+				command.CommandText += ",userPermissions,ancestorId) VALUES(?user";
+				foreach (string tableName in tableNamesList) {
+					command.CommandText += ",?" + tableName;
+					if (userPermissions.ContainsKey(tableName))
+						command.Parameters.Add("?" + tableName, MySqlDbType.Int32).Value = (int)userPermissions[tableName];
+					else
+						command.Parameters.Add("?" + tableName, MySqlDbType.Int32).Value = (int)Permissions.None;
 				}
-				else {
-					command = connection.CreateCommand();
-					command.CommandText = "INSERT INTO permissions(user";
-					command.Parameters.Add("?user", MySqlDbType.VarChar).Value = username;
-
-					foreach (string tableName in tableNamesList)
-						command.CommandText += "," + tableName;
-					command.CommandText += ",userPermissions,ancestorId) VALUES(?user";
-					foreach (string tableName in tableNamesList) {
-						command.CommandText += ",?" + tableName;
-						if (userPermissions.ContainsKey(tableName))
-							command.Parameters.Add("?" + tableName, MySqlDbType.Int32).Value = (int)userPermissions[tableName];
-						else
-							command.Parameters.Add("?" + tableName, MySqlDbType.Int32).Value = (int)Permissions.None;
-					}
-					if (userPermissions.ContainsKey("userPermissions"))
-						command.Parameters.Add("?userPermissions", MySqlDbType.Int32).Value = (int)userPermissions["userPermissions"];
-					else
-						command.Parameters.Add("?userPermissions", MySqlDbType.Int32).Value = (int)Permissions.None;
-					command.CommandText += ",?userPermissions,?ancestorId)";
-					if (ancestorId == null)
-						command.Parameters.Add("?ancestorId", MySqlDbType.Int32).Value = DBNull.Value;
-					else
-						command.Parameters.Add("?ancestorId", MySqlDbType.Int32).Value = ancestorId;
-					command.Prepare();
-					command.ExecuteNonQuery();
-				}
+				if (userPermissions.ContainsKey("userPermissions"))
+					command.Parameters.Add("?userPermissions", MySqlDbType.Int32).Value = (int)userPermissions["userPermissions"];
+				else
+					command.Parameters.Add("?userPermissions", MySqlDbType.Int32).Value = (int)Permissions.None;
+				command.CommandText += ",?userPermissions,?ancestorId)";
+				if (ancestorId == null)
+					command.Parameters.Add("?ancestorId", MySqlDbType.Int32).Value = DBNull.Value;
+				else
+					command.Parameters.Add("?ancestorId", MySqlDbType.Int32).Value = ancestorId;
+				command.Prepare();
+				command.ExecuteNonQuery();
 			} catch (MySqlException ex) {
 				MessageBox.Show(ex.Message);
 				mainView.Refresh();
@@ -691,14 +690,6 @@ namespace MySQL_DAC.Database {
 			}
 		}
 
-		internal static void UpdateUser(string username, string oldPassword, string newPassword, Dictionary<string, Permissions> userPermissions, Dictionary<string, Permissions> previousPermissions, int? ancestorId, string relinquishUser = null, int userId = 0, Dictionary<string, Permissions> relinquishUserPermissions = null) {
-			try {
-				// update password
-				UpdateUser(username, userPermissions, previousPermissions, ancestorId, relinquishUser, userId, relinquishUserPermissions);
-			} catch (MySqlException ex) {
-				MessageBox.Show(ex.Message);
-			}
-		}
 
 		internal static void UpdateUser(string username, Dictionary<string, Permissions> userPermissions, Dictionary<string, Permissions> previousPermissions, int? ancestorId, string relinquishUser = null, int userId = 0, Dictionary<string, Permissions> relinquishUserPermissions = null) {
 			try {
@@ -820,6 +811,7 @@ namespace MySQL_DAC.Database {
 
 				#region Grant User Permissions
 				if (userPermissions["userPermissions"].HasFlag(Permissions.DelegateCreateUser) && !previousPermissions["userPermissions"].HasFlag(Permissions.DelegateCreateUser)) {
+					// błąd
 					using (MySqlCommand cmd = new MySqlCommand($"GRANT CREATE USER ON *.* TO @username WITH GRANT OPTION;", connection)) {
 						cmd.Parameters.AddWithValue("@username", $"{username}");
 						cmd.Prepare();
@@ -953,9 +945,9 @@ namespace MySQL_DAC.Database {
 
 					command.Prepare();
 					command.ExecuteNonQuery();
-
-
-					RemoveAllPrivileges(relinquishUser, relinquishUserPermissions);
+					
+					RemoveCanTakeOver(username, userPermissions["userPermissions"] & ~Permissions.CanTakeOver);
+					RemoveAllPrivileges(relinquishUser, relinquishUserPermissions, mainView.userPermissionsView.GetPermissions(relinquishUser));
 				}
 				else {
 					command = connection.CreateCommand();

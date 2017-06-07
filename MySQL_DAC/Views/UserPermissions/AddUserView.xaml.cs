@@ -30,11 +30,9 @@ namespace MySQL_DAC.Views.UserPermissions {
 			}
 			if (mainView.thisUserPermissions["userPermissions"].HasFlag(Permissions.DelegateCanTakeOver)) {
 				canTakeOverCheckBox.IsEnabled = true;
-				delegateCanTakeOverCheckBox.IsEnabled = true;
 			}
 			else {
 				canTakeOverCheckBox.IsEnabled = false;
-				delegateCanTakeOverCheckBox.IsEnabled = false;
 			}
 			userPermissions.Add("userPermissions", Permissions.UserPermissions);
 		}
@@ -89,6 +87,8 @@ namespace MySQL_DAC.Views.UserPermissions {
 			delegateEditPermissionCheckBox.IsChecked = userPermissions[tableName].HasFlag(Permissions.DelegateEdit);
 			viewPermissionCheckBox.IsChecked = userPermissions[tableName].HasFlag(Permissions.View);
 			delegateViewPermissionCheckBox.IsChecked = userPermissions[tableName].HasFlag(Permissions.DelegateView);
+
+			permissionInfoTextBlock.Visibility = Visibility.Collapsed;
 		}
 
 		private void addUserButton_Click(object sender, RoutedEventArgs e) {
@@ -108,24 +108,29 @@ namespace MySQL_DAC.Views.UserPermissions {
 				usernameInfoTextBox.Visibility = Visibility.Visible;
 				return;
 			}
-			if (relinquishCheckBox.IsChecked == true) {
-				RemoveAllPermissionsFromChildren(userId);
-				DatabaseManager.AddUser(usernameTextBox.Text, passwordBox.Password, userPermissions, userId, mainView.username, userId, mainView.thisUserPermissions);
-				mainView.Refresh();
+
+			bool userWithoutOwner = true;
+			foreach(var entry in userPermissions) {
+				if (entry.Key.Equals("userPermissions")) {
+					if ((entry.Value & ~Permissions.UserPermissions) != Permissions.None) {
+						userWithoutOwner = false;
+						break;
+					}
+				} else if (entry.Value != Permissions.None) {
+					userWithoutOwner = false;
+					break;
+				}
 			}
-			else {
+
+			if (userWithoutOwner)
+				DatabaseManager.AddUser(usernameTextBox.Text, passwordBox.Password, userPermissions);
+			else
 				DatabaseManager.AddUser(usernameTextBox.Text, passwordBox.Password, userPermissions, userId);
-				Logger.WriteEntry($"{mainView.username} added user {usernameTextBox.Text} with permissions [{userPermissions.Present()}]");
-			}
+
+			Logger.WriteEntry($"{mainView.username} added user {usernameTextBox.Text} with permissions [{userPermissions.Present()}]");
 
 			mainView.userPermissionsView.Refresh();
 			mainView.DataContext = mainView.userPermissionsView;
-		}
-		private void RemoveAllPermissionsFromChildren(int ancestorId) {
-			foreach (string username in mainView.userPermissionsView.GetUsersWithAncestorId(ancestorId)) {
-				RemoveAllPermissionsFromChildren(mainView.userPermissionsView.GetId(username));
-				DatabaseManager.RemoveAllPrivileges(username, mainView.thisUserPermissions);
-			}
 		}
 
 		private void cancelUserButton_Click(object sender, RoutedEventArgs e) {
@@ -153,6 +158,7 @@ namespace MySQL_DAC.Views.UserPermissions {
 
 
 		#region checkbox_toggling
+		#region table_permissions
 		private void addPermissionCheckBox_Checked(object sender, RoutedEventArgs e) {
 			userPermissions[tableName] |= Permissions.Add;
 		}
@@ -164,24 +170,32 @@ namespace MySQL_DAC.Views.UserPermissions {
 
 		private void deletePermissionCheckBox_Checked(object sender, RoutedEventArgs e) {
 			userPermissions[tableName] |= Permissions.Delete | Permissions.View;
+			if (viewPermissionCheckBox.IsChecked == false)
+				permissionInfoTextBlock.Visibility = Visibility.Visible;
 			viewPermissionCheckBox.IsChecked = true;
 		}
 
 		private void delegateDeletePermissionCheckBox_Checked(object sender, RoutedEventArgs e) {
 			userPermissions[tableName] |= Permissions.Delete | Permissions.DelegateDelete | Permissions.View | Permissions.DelegateView;
 			deletePermissionCheckBox.IsChecked = true;
+			if (viewPermissionCheckBox.IsChecked == false || delegateViewPermissionCheckBox.IsChecked == false)
+				permissionInfoTextBlock.Visibility = Visibility.Visible;
 			viewPermissionCheckBox.IsChecked = true;
 			delegateViewPermissionCheckBox.IsChecked = true;
 		}
 
 		private void editPermissionCheckBox_Checked(object sender, RoutedEventArgs e) {
 			userPermissions[tableName] |= Permissions.Edit | Permissions.View;
+			if (viewPermissionCheckBox.IsChecked == false)
+				permissionInfoTextBlock.Visibility = Visibility.Visible;
 			viewPermissionCheckBox.IsChecked = true;
 		}
 
 		private void delegateEditPermissionCheckBox_Checked(object sender, RoutedEventArgs e) {
 			userPermissions[tableName] |= Permissions.Edit | Permissions.DelegateEdit | Permissions.View | Permissions.DelegateView;
 			editPermissionCheckBox.IsChecked = true;
+			if (viewPermissionCheckBox.IsChecked == false || delegateViewPermissionCheckBox.IsChecked == false)
+				permissionInfoTextBlock.Visibility = Visibility.Visible;
 			viewPermissionCheckBox.IsChecked = true;
 			delegateViewPermissionCheckBox.IsChecked = true;
 		}
@@ -227,6 +241,8 @@ namespace MySQL_DAC.Views.UserPermissions {
 		private void viewPermissionCheckBox_Unchecked(object sender, RoutedEventArgs e) {
 			userPermissions[tableName] &= ~(Permissions.View | Permissions.DelegateView | Permissions.Delete | Permissions.DelegateDelete | Permissions.Edit | Permissions.DelegateEdit);
 			delegateViewPermissionCheckBox.IsChecked = false;
+			if (deletePermissionCheckBox.IsChecked == true || editPermissionCheckBox.IsChecked == true)
+				permissionInfoTextBlock.Visibility = Visibility.Visible;
 			deletePermissionCheckBox.IsChecked = false;
 			delegateDeletePermissionCheckBox.IsChecked = false;
 			editPermissionCheckBox.IsChecked = false;
@@ -235,12 +251,20 @@ namespace MySQL_DAC.Views.UserPermissions {
 
 		private void delegateViewPermissionCheckBox_Unchecked(object sender, RoutedEventArgs e) {
 			userPermissions[tableName] &= ~(Permissions.DelegateView | Permissions.DelegateDelete | Permissions.DelegateEdit);
+			if (delegateDeletePermissionCheckBox.IsChecked == true || delegateEditPermissionCheckBox.IsChecked == true)
+				permissionInfoTextBlock.Visibility = Visibility.Visible;
 			delegateDeletePermissionCheckBox.IsChecked = false;
 			delegateEditPermissionCheckBox.IsChecked = false;
 		}
 
 
 		private void checkAllButton_Click(object sender, RoutedEventArgs e) {
+			if (mainView.thisUserPermissions[tableName].HasFlag(Permissions.DelegateView)) {
+				userPermissions[tableName] |= Permissions.View;
+				viewPermissionCheckBox.IsChecked = true;
+				userPermissions[tableName] |= Permissions.DelegateView;
+				delegateViewPermissionCheckBox.IsChecked = true;
+			}
 			if (mainView.thisUserPermissions[tableName].HasFlag(Permissions.DelegateAdd)) {
 				userPermissions[tableName] |= Permissions.Add;
 				addPermissionCheckBox.IsChecked = true;
@@ -258,12 +282,6 @@ namespace MySQL_DAC.Views.UserPermissions {
 				editPermissionCheckBox.IsChecked = true;
 				userPermissions[tableName] |= Permissions.DelegateEdit;
 				delegateEditPermissionCheckBox.IsChecked = true;
-			}
-			if (mainView.thisUserPermissions[tableName].HasFlag(Permissions.DelegateView)) {
-				userPermissions[tableName] |= Permissions.View;
-				viewPermissionCheckBox.IsChecked = true;
-				userPermissions[tableName] |= Permissions.DelegateView;
-				delegateViewPermissionCheckBox.IsChecked = true;
 			}
 		}
 
@@ -285,6 +303,7 @@ namespace MySQL_DAC.Views.UserPermissions {
 			userPermissions[tableName] &= ~Permissions.DelegateView;
 			delegateViewPermissionCheckBox.IsChecked = false;
 		}
+		#endregion
 
 		#region userPermissions
 		private void createUsersPermissionCheckBox_Checked(object sender, RoutedEventArgs e) {
@@ -360,6 +379,10 @@ namespace MySQL_DAC.Views.UserPermissions {
 				userPermissions["userPermissions"] |= Permissions.DelegateViewPermissions;
 				delegateViewUserPermissionsCheckBox.IsChecked = true;
 			}
+			if (mainView.thisUserPermissions["userPermissions"].HasFlag(Permissions.DelegateCanTakeOver)) {
+				userPermissions["userPermissions"] |= Permissions.CanTakeOver;
+				canTakeOverCheckBox.IsChecked = true;
+			}
 		}
 
 		private void userUncheckAllButton_Click(object sender, RoutedEventArgs e) {
@@ -375,19 +398,12 @@ namespace MySQL_DAC.Views.UserPermissions {
 			viewUserPermissionsCheckBox.IsChecked = false;
 			userPermissions["userPermissions"] &= ~Permissions.DelegateViewPermissions;
 			delegateViewUserPermissionsCheckBox.IsChecked = false;
+			userPermissions["userPermissions"] &= ~Permissions.CanTakeOver;
+			canTakeOverCheckBox.IsChecked = false;
 		}
 		#endregion
 
 		#endregion
-
-		private void relinquishCheckBox_Checked(object sender, RoutedEventArgs e) {
-			warnTextBox.Text = "You will lose all permissions!";
-			warnTextBox.Visibility = Visibility.Visible;
-		}
-
-		private void relinquishCheckBox_Unchecked(object sender, RoutedEventArgs e) {
-			warnTextBox.Visibility = Visibility.Collapsed;
-		}
 
 		private void canTakeOverCheckBox_Checked(object sender, RoutedEventArgs e) {
 			userPermissions["userPermissions"] |= Permissions.CanTakeOver;
@@ -395,15 +411,6 @@ namespace MySQL_DAC.Views.UserPermissions {
 
 		private void canTakeOverCheckBox_Unchecked(object sender, RoutedEventArgs e) {
 			userPermissions["userPermissions"] &= ~(Permissions.CanTakeOver | Permissions.DelegateCanTakeOver);
-			delegateCanTakeOverCheckBox.IsChecked = false;
-		}
-		private void delegateCanTakeOverCheckBox_Checked(object sender, RoutedEventArgs e) {
-			userPermissions["userPermissions"] |= Permissions.DelegateCanTakeOver | Permissions.CanTakeOver;
-			canTakeOverCheckBox.IsChecked = true;
-		}
-
-		private void delegateCanTakeOverCheckBox_Unchecked(object sender, RoutedEventArgs e) {
-			userPermissions["userPermissions"] &= ~Permissions.DelegateCanTakeOver;
 		}
 	}
 }

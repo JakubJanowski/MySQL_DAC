@@ -83,7 +83,7 @@ namespace MySQL_DAC.Views.UserPermissions {
 		}
 
 		internal void Prepare(string username) {
-			bool canEditUserPermissions = false;
+			//bool canEditUserPermissions = false;
 			if (!mainView.thisUserPermissions["userPermissions"].HasFlag(Permissions.CreateUser))
 				addUserButton.IsEnabled = false;
 			if (!mainView.thisUserPermissions["userPermissions"].HasFlag(Permissions.ViewPermissions)) {
@@ -92,7 +92,7 @@ namespace MySQL_DAC.Views.UserPermissions {
 				editInfoTextBlock.Visibility = Visibility.Collapsed;
 			}
 
-			foreach (var p in userPermissions[username]) {
+			/*foreach (var p in userPermissions[username]) {
 				if ((p.Value & Permissions.DelegateAllNormal) > 0) {
 					canEditUserPermissions = true;
 					break;
@@ -102,7 +102,7 @@ namespace MySQL_DAC.Views.UserPermissions {
 			if (!canEditUserPermissions) {
 				editUserButton.Visibility = Visibility.Collapsed;
 				editInfoTextBlock.Visibility = Visibility.Collapsed;
-			}
+			}*/
 
 		}
 
@@ -153,7 +153,11 @@ namespace MySQL_DAC.Views.UserPermissions {
 
 		private void editUserButton_Click(object sender, RoutedEventArgs e) {
 			string selectedUserName = (string)((DataRowView)usersDataGrid.SelectedItem)["user"];
-			mainView.editPermissionsView = new EditPermissionsView(mainView, selectedUserName, userPermissions[selectedUserName], userId);
+			Dictionary<string, Permissions> selectedUserPermissions = new Dictionary<string, Permissions>();
+			foreach (var entry in userPermissions[selectedUserName])
+				selectedUserPermissions[entry.Key] = entry.Value;
+
+			mainView.editPermissionsView = new EditPermissionsView(mainView, selectedUserName, selectedUserPermissions, userId);
 			mainView.DataContext = mainView.editPermissionsView;
 		}
 		
@@ -166,8 +170,12 @@ namespace MySQL_DAC.Views.UserPermissions {
 		}
 
 		private void usersDataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) {
-			if (usersDataGrid.SelectedItem == null)
+			if (usersDataGrid.SelectedItem == null) {
+				editInfoTextBlock.Text = "Select user from the table to edit.";
+				editInfoTextBlock.Visibility = Visibility.Visible;
+				editUserButton.IsEnabled = false;
 				return;
+			}
 			int? ancestorId;
 			if (((DataRowView)usersDataGrid.SelectedItem)["ancestorId"] == DBNull.Value)
 				ancestorId = null;
@@ -175,14 +183,23 @@ namespace MySQL_DAC.Views.UserPermissions {
 				ancestorId = (int)((DataRowView)usersDataGrid.SelectedItem)["ancestorId"];
 			while (ancestorId != userId && ancestorId != null && ancestorId != -1) {
 				var row = usersTable.AsEnumerable().SingleOrDefault(r => r.Field<int>("id") == ancestorId);
-				if (row["ancestorId"] == DBNull.Value)
+				if (row == null)
+					ancestorId = -1;
+				else if (row["ancestorId"] == DBNull.Value)
 					ancestorId = null;
 				else
 					ancestorId = (int)row["ancestorId"];
 			}
 			if (ancestorId == userId || ancestorId == -1) {
-				editInfoTextBlock.Visibility = Visibility.Collapsed;
-				editUserButton.IsEnabled = true;
+				if (((DataRowView)usersDataGrid.SelectedItem)["user"].Equals(username)) {
+					editInfoTextBlock.Text = "You do not have enough rights to edit this user";
+					editInfoTextBlock.Visibility = Visibility.Visible;
+					editUserButton.IsEnabled = false;
+				}
+				else {
+					editInfoTextBlock.Visibility = Visibility.Collapsed;
+					editUserButton.IsEnabled = true;
+				}
 			} else if (ancestorId == null) {
 				editInfoTextBlock.Text = "You do not have enough rights to edit this user";
 				editInfoTextBlock.Visibility = Visibility.Visible;

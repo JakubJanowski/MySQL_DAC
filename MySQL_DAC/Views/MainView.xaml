@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MySQL_DAC.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="600" d:DesignWidth="600">
 
 	<UserControl.Resources>
 		<Style TargetType="TextBlock" x:Key="HoverUnderlineStyle">
@@ -17,32 +17,37 @@
 		</Style>
 	</UserControl.Resources>
 
-	<StackPanel Background="#FFE5E5E5">
-		<Grid>
+	<Grid Background="#FFE5E5E5">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+		<Grid Grid.Row="0">
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-			<Button Click="editAccountButton_Click" Margin="20,0">
-				<Button.Template>
-					<ControlTemplate TargetType="Button">
-						<ContentPresenter />
-					</ControlTemplate>
-				</Button.Template>
-				<TextBlock Text="Edit account" Style="{StaticResource HoverUnderlineStyle}"/>
-			</Button>
-		</StackPanel>
-		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-			<TextBlock x:Name="loginTextBlock" TextAlignment="Right"/>
-			<Button Click="logOutButton_Click" Margin="20,0">
-				<Button.Template>
-					<ControlTemplate TargetType="Button">
-						<ContentPresenter />
-					</ControlTemplate>
-				</Button.Template>
-				<TextBlock Text="Log out" Style="{StaticResource HoverUnderlineStyle}"/>
-			</Button>
+				<Button Click="editAccountButton_Click" Margin="20,0">
+					<Button.Template>
+						<ControlTemplate TargetType="Button">
+							<ContentPresenter />
+						</ControlTemplate>
+					</Button.Template>
+					<TextBlock Text="Edit account" Style="{StaticResource HoverUnderlineStyle}"/>
+				</Button>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+				<TextBlock x:Name="loginTextBlock" TextAlignment="Right"/>
+				<Button Click="logOutButton_Click" Margin="20,0">
+					<Button.Template>
+						<ControlTemplate TargetType="Button">
+							<ContentPresenter />
+						</ControlTemplate>
+					</Button.Template>
+					<TextBlock Text="Log out" Style="{StaticResource HoverUnderlineStyle}"/>
+				</Button>
 			</StackPanel>
 		</Grid>
-		<Separator />
-		<TabControl x:Name="tabControl" TabStripPlacement="Top">
+		<Separator Grid.Row="1"/>
+		<TabControl x:Name="tabControl" TabStripPlacement="Top" Grid.Row="2">
 			<TabItem Header="Database">
 				<local:DatabaseView x:Name="databaseView"/>
 			</TabItem>
@@ -50,6 +55,6 @@
 				<ContentControl Content="{Binding}" />
 			</TabItem>
 		</TabControl>
-	</StackPanel>
+	</Grid>
 
 </UserControl>

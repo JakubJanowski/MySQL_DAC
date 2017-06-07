@@ -15,6 +15,10 @@
 				<TextBox x:Name="serverIPTextBox" Height="20" Text="{Binding serverIP}" TextWrapping="Wrap" Width="120"/>
 			</StackPanel>
 			<StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+				<TextBlock TextWrapping="Wrap" Text="Port:" Width="95"/>
+				<TextBox x:Name="portTextBox" Height="20" Text="{Binding port}" TextWrapping="Wrap" Width="120"/>
+			</StackPanel>
+			<StackPanel Margin="0,10,0,0" Orientation="Horizontal">
 				<TextBlock TextWrapping="Wrap" Text="Database name:" Width="95"/>
 				<TextBox x:Name="databaseNameTextBox" Height="20" Text="{Binding databaseName}" TextWrapping="Wrap" Width="120"/>
 			</StackPanel>

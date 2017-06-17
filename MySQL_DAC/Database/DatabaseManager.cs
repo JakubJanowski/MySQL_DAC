@@ -47,7 +47,7 @@ namespace MySQL_DAC.Database {
 			connection = new MySqlConnection();
 			databaseName = Configure.DatabaseName;
 			//if (username.Equals("root") || username.Equals("admin") || username.Equals("mysql.sys")) {
-			//	MessageBox.Show("To prevent damage from unintentional actions during BSK project, access to administrative users has been blocked from this application.");
+			//	MessageBox.Show("To prevent damage from unintentional actions during testing, access to administrative users has been blocked from this application.");
 			//	return false;
 			//}
 
